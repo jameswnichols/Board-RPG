@@ -16,7 +16,7 @@ def generateMap(state):
 
     for i in range(0, MAP_SAMPLE_SEGMENTS):
 
-        pointShiftAmount = (random.random()*2)-1
+        #Get point on circle at i
         
         steppedRadians = sampleStep * i
 
@@ -24,11 +24,15 @@ def generateMap(state):
 
         circleY = radius * (math.sin(steppedRadians)) + centreY
 
+        #Offset each point a bit
+
         xChangePerSample, yChangePerSample = (circleX - centreX), (circleY - centreY)
+
+        pointShiftAmount = (random.random()*2)-1
 
         sampleNo = pointShiftAmount * POINT_SHIFT_SAMPLES
 
-        actualX, actualY = xChangePerSample * sampleNo, yChangePerSample * sampleNo
+        actualX, actualY = math.floor(xChangePerSample * sampleNo), math.floor(yChangePerSample * sampleNo)
 
 
 
