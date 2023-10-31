@@ -6,8 +6,22 @@ MAP_HEIGHT = 200
 
 MAP_SAMPLE_SEGMENTS = 100
 POINT_SHIFT_SAMPLES = 100
+POINT_SHIFT_MAX_DISTANCE = 5
+
+def setupMapDictionary():
+
+    map = {}
+
+    for y in range(0, MAP_HEIGHT):
+        for x in range(0, MAP_WIDTH):
+            map[(x, y)] = " "
+    
+    return map
 
 def generateMap(state):
+
+    emptyMap = setupMapDictionary()
+
     sampleStep = (2 * math.pi) / MAP_SAMPLE_SEGMENTS
 
     centreX, centreY = MAP_WIDTH // 2, MAP_HEIGHT // 2
@@ -30,9 +44,11 @@ def generateMap(state):
 
         pointShiftAmount = (random.random()*2)-1
 
-        sampleNo = pointShiftAmount * POINT_SHIFT_SAMPLES
+        sampleNo = pointShiftAmount * POINT_SHIFT_MAX_DISTANCE
 
         actualX, actualY = math.floor(xChangePerSample * sampleNo), math.floor(yChangePerSample * sampleNo)
+
+        emptyMap[(actualX, actualY)] = "X"
 
 
 
@@ -41,9 +57,9 @@ def generateMap(state):
 
 
 def generateState():
-    state = {"playerInfo":{"Position":{"x":0,"y":0}},"MapData":[]}
+    state = {"playerInfo":{"position":{"x":0,"y":0}},"mapData":{}, "objectData":{}}
 
     return state
 
 if __name__ == "__main__":
-    pass
+    generateMap({})
