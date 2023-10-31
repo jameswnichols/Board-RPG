@@ -12,7 +12,7 @@ def setupMapDictionary():
     map = {}
     for y in range(MAP_HEIGHT):
         for x in range(MAP_WIDTH):
-            map[(x, y)] = " "
+            map[(x, y)] = "≋"
     return map
 
 def generatePointShiftValue(val):
@@ -43,15 +43,12 @@ def getPointsFromThreshold(points, smallestValue, threshold):
     
     return thinPoints
 
-def generateMap(state):
-
-    map = setupMapDictionary()
-
+def generatePointsOnCircle(centre, radius, shiftMax):
     sampleStep = (2 * math.pi) / MAP_SAMPLE_SEGMENTS
 
-    centreX, centreY = MAP_WIDTH // 2, MAP_HEIGHT // 2
+    centreX, centreY = centre
 
-    radius = (MAP_WIDTH - centreX) * 0.8
+    radius = radius
 
     smallestValue = 0
 
@@ -71,7 +68,7 @@ def generateMap(state):
 
         xChangePerSample, yChangePerSample = (circleX - centreX) / POINT_SHIFT_SAMPLES, (circleY - centreY) / POINT_SHIFT_SAMPLES
 
-        sampleNo = generatePointShiftValue(POINT_SHIFT_MAX_DISTANCE)
+        sampleNo = generatePointShiftValue(shiftMax)
 
         if sampleNo < smallestValue:
             smallestValue = sampleNo
@@ -79,8 +76,18 @@ def generateMap(state):
         actualX, actualY = math.floor(circleX + xChangePerSample * sampleNo), math.floor(circleY + yChangePerSample * sampleNo)
 
         pointValues.append({"coord":(actualX, actualY),"value":sampleNo})
+    
+    return pointValues, smallestValue
 
-        #map[(actualX, actualY)] = "X"
+def generateMap(state):
+
+    map = setupMapDictionary()
+
+    centreX, centreY = MAP_WIDTH // 2, MAP_HEIGHT // 2
+
+    radius = (MAP_WIDTH - centreX) * 0.8
+
+    pointValues, smallestValue = generatePointsOnCircle((centreX, centreY), radius, POINT_SHIFT_MAX_DISTANCE)
 
     points = getPointsFromThreshold(pointValues, smallestValue, 0.65)
 
@@ -96,7 +103,7 @@ def generateMap(state):
         linePoints = generatePointsOnLine(pos1, pos2)
 
         for lp in linePoints:
-            map[lp] = "X"
+            map[lp] = "∴"
 
     state["mapData"] = map
 
