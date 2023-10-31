@@ -12,7 +12,7 @@ def setupMapDictionary():
     map = {}
     for y in range(MAP_HEIGHT):
         for x in range(MAP_WIDTH):
-            map[(x, y)] = "≋"
+            map[(x, y)] = " "
     return map
 
 def generatePointShiftValue(val):
@@ -22,6 +22,9 @@ def getLength(pos1, pos2):
     return math.sqrt((pos1[0]-pos2[0])**2+(pos1[1]-pos2[1])**2)
 
 def generatePointsOnLine(pos1, pos2):
+    if pos1 == pos2:
+        return []
+    
     samplePoints = int(getLength(pos1, pos2) * 2)
 
     points = []
@@ -82,30 +85,18 @@ def generatePointsOnCircle(centre, radius, shiftMax):
 def getPointOnLine(pos1, pos2, len):
     lineLength = getLength(pos1, pos2)
     xChange, yChange = (pos1[0] - pos2[0]) / lineLength, (pos1[1] - pos2[1]) / lineLength
-    return (pos1[0] + xChange * len, pos1[1] + yChange * len)
+    return (pos1[0] - xChange * len, pos1[1] - yChange * len)
 
 def getAdjecentPoints(pos):
     shifts = [(-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1)]
 
     return [(pos[0]+s[0], pos[1]+s[1]) for s in shifts]
 
-def generateMap(state):
+def islandRing(map, centre, radius, shiftMaxDistance, ringSize, threshold, tile):
 
-    map = setupMapDictionary()
+    circlePoints, smallestValue = generatePointsOnCircle(centre, radius, shiftMaxDistance)
 
-    centreX, centreY = MAP_WIDTH // 2, MAP_HEIGHT // 2
-
-    shoreRadius = (MAP_WIDTH - centreX) * 0.8
-
-    beachSize = (MAP_WIDTH - centreX) * 0.15
-
-    grassRadius = (MAP_WIDTH - centreX) * 0.65
-
-    grassSize = (MAP_WIDTH - centreX) * 0.15
-
-    shorePointValues, smallestValue = generatePointsOnCircle((centreX, centreY), shoreRadius, POINT_SHIFT_MAX_DISTANCE)
-
-    points = getPointsFromThreshold(shorePointValues, smallestValue, 0.65)
+    points = getPointsFromThreshold(circlePoints, smallestValue, threshold)
 
     for i, point in enumerate(points):
 
@@ -119,15 +110,71 @@ def generateMap(state):
 
         for lp in linePoints:
 
-            beachPoint = getPointOnLine(lp,(centreX,centreY),beachSize)
+            innerRingPoint = getPointOnLine(lp,centre,ringSize)
 
-            beachLinePoints = generatePointsOnLine(lp, beachPoint)
+            ringWidthPoints = generatePointsOnLine(lp, innerRingPoint)
 
-            for blp in beachLinePoints:
+            for rwp in ringWidthPoints:
                 
-                for adjP in getAdjecentPoints(blp):
+                for adjP in getAdjecentPoints(rwp):
 
-                    map[adjP] = "∴"
+                    map[adjP] = tile
+
+def generateMap(state):
+
+    map = setupMapDictionary()
+
+    centreX, centreY = MAP_WIDTH // 2, MAP_HEIGHT // 2
+
+    #Beach
+    shoreRadius = (MAP_WIDTH - centreX) * 0.8
+    shoreSize = (MAP_WIDTH - centreX) * 0.20
+
+    #Grass
+    grassRadius = (MAP_WIDTH - centreX) * 0.69
+    grassSize = (MAP_WIDTH - centreX) * 0.5
+
+    #Small Mountaims
+    mountainRadius = (MAP_WIDTH - centreX) * 0.35
+    mountainSize = (MAP_WIDTH - centreX) * 0.35
+
+    #Tall Mountains
+    superMountainRadius = (MAP_WIDTH - centreX) * 0.15
+    superMountainSize = (MAP_WIDTH - centreX) * 0.15
+
+    islandRing(map, (centreX, centreY), shoreRadius, POINT_SHIFT_MAX_DISTANCE, shoreSize, 0.65, "∴")
+
+    islandRing(map, (centreX, centreY), grassRadius, POINT_SHIFT_MAX_DISTANCE, grassSize, 0.65, "≡")
+
+    islandRing(map, (centreX, centreY), mountainRadius, POINT_SHIFT_MAX_DISTANCE+10, mountainSize, 0.35, "^") #≙
+
+    islandRing(map, (centreX, centreY), superMountainRadius, POINT_SHIFT_MAX_DISTANCE+50, superMountainSize, 0.35, "Ʌ")
+
+    # shorePointValues, smallestValue = generatePointsOnCircle((centreX, centreY), shoreRadius, POINT_SHIFT_MAX_DISTANCE)
+
+    # points = getPointsFromThreshold(shorePointValues, smallestValue, 0.65)
+
+    # for i, point in enumerate(points):
+
+    #     pos1 = point["coord"]
+    #     if i == len(points) - 1:
+    #         pos2 = points[0]["coord"]
+    #     else:
+    #         pos2 = points[i + 1]["coord"]
+
+    #     linePoints = generatePointsOnLine(pos1, pos2)
+
+    #     for lp in linePoints:
+
+    #         beachPoint = getPointOnLine(lp,(centreX,centreY),beachSize)
+
+    #         beachLinePoints = generatePointsOnLine(lp, beachPoint)
+
+    #         for blp in beachLinePoints:
+                
+    #             for adjP in getAdjecentPoints(blp):
+
+    #                 map[adjP] = "∴"
 
     state["mapData"] = map
 
@@ -146,11 +193,27 @@ def renderMap(state):
     with open("test.txt","w") as f:
         f.writelines(mapLines)
 
+def testMap(state, times):
+    fails = 0
+
+    for i in range(0, times):
+        print(f"Try: {i+1}")
+        try:
+            generateMap(state)
+        except:
+            fails += 1
+    
+    return fails
+
 
 def generateState():
     state = {"playerInfo":{"position":{"x":0,"y":0}},"mapData":{}, "objectData":{}}
 
     generateMap(state)
+
+    # fails = testMap(state, 50)
+
+    # print(f"Test failed {fails} times.")
 
     renderMap(state)
 
