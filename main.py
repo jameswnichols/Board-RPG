@@ -6,7 +6,7 @@ MAP_HEIGHT = 200
 
 MAP_SAMPLE_SEGMENTS = 100
 POINT_SHIFT_SAMPLES = 100
-POINT_SHIFT_MAX_DISTANCE = 10
+POINT_SHIFT_MAX_DISTANCE = 15
 
 def setupMapDictionary():
     map = {}
@@ -18,6 +18,21 @@ def setupMapDictionary():
 def generatePointShiftValue(val):
     return ((random.random()*2)-1) * val
 
+def getLength(pos1, pos2):
+    return math.sqrt((pos1[0]-pos2[0])**2+(pos1[1]-pos2[1])**2)
+
+def generatePointsOnLine(pos1, pos2):
+    samplePoints = int(getLength(pos1, pos2) * 2)
+
+    points = []
+
+    xPerSample, yPerSample = (pos1[0] - pos2[0]) / samplePoints, (pos1[1] - pos2[1]) / samplePoints
+
+    for i in range(samplePoints):
+        points.append((pos1 + int(xPerSample * i), pos2 + int(yPerSample * i)))
+
+    return points
+
 def generateMap(state):
 
     map = setupMapDictionary()
@@ -28,7 +43,9 @@ def generateMap(state):
 
     radius = (MAP_WIDTH - centreX) * 0.8
 
-    lastPointShiftValue = generatePointShiftValue(POINT_SHIFT_MAX_DISTANCE)
+    smallestValue = 0
+
+    pointValues = []
 
     for i in range(MAP_SAMPLE_SEGMENTS):
 
@@ -42,19 +59,25 @@ def generateMap(state):
 
         #Offset each point a bit
 
-        #Last value * 0.5
-
         xChangePerSample, yChangePerSample = (circleX - centreX) / POINT_SHIFT_SAMPLES, (circleY - centreY) / POINT_SHIFT_SAMPLES
 
-        lastValueMin = lastPointShiftValue - lastPointShiftValue * 0.5
+        sampleNo = generatePointShiftValue(POINT_SHIFT_MAX_DISTANCE)
 
-        sampleNo = lastValueMin + generatePointShiftValue(lastPointShiftValue)
+        if sampleNo < smallestValue:
+            smallestValue = sampleNo
 
         actualX, actualY = math.floor(circleX + xChangePerSample * sampleNo), math.floor(circleY + yChangePerSample * sampleNo)
 
-        map[(actualX, actualY)] = "X"
+        pointValues.append({"coord":(actualX, actualY),"value":sampleNo})
 
-        lastPointShiftValue = sampleNo
+        #map[(actualX, actualY)] = "X"
+
+    for i, pointValue in enumerate(pointValues):
+        pos, value = pointValue["coord"], abs(pointValue["value"])
+
+
+        if abs(value - abs(smallestValue)) > abs(smallestValue) * 0.65:
+            map[pos] = "X"
 
     state["mapData"] = map
 
