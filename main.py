@@ -1,22 +1,22 @@
 import random
 import math
 
-MAP_WIDTH = 50
-MAP_HEIGHT = 50
+MAP_WIDTH = 200
+MAP_HEIGHT = 200
 
-MAP_SAMPLE_SEGMENTS = 360
+MAP_SAMPLE_SEGMENTS = 100
 POINT_SHIFT_SAMPLES = 100
 POINT_SHIFT_MAX_DISTANCE = 10
 
 def setupMapDictionary():
-
     map = {}
-
     for y in range(MAP_HEIGHT):
         for x in range(MAP_WIDTH):
             map[(x, y)] = " "
-    
     return map
+
+def generatePointShiftValue(val):
+    return ((random.random()*2)-1) * val
 
 def generateMap(state):
 
@@ -27,6 +27,8 @@ def generateMap(state):
     centreX, centreY = MAP_WIDTH // 2, MAP_HEIGHT // 2
 
     radius = (MAP_WIDTH - centreX) * 0.8
+
+    lastPointShiftValue = generatePointShiftValue(POINT_SHIFT_MAX_DISTANCE)
 
     for i in range(MAP_SAMPLE_SEGMENTS):
 
@@ -40,15 +42,19 @@ def generateMap(state):
 
         #Offset each point a bit
 
+        #Last value * 0.5
+
         xChangePerSample, yChangePerSample = (circleX - centreX) / POINT_SHIFT_SAMPLES, (circleY - centreY) / POINT_SHIFT_SAMPLES
 
-        pointShiftAmount = (random.random()*2)-1
+        lastValueMin = lastPointShiftValue - lastPointShiftValue * 0.5
 
-        sampleNo = pointShiftAmount * POINT_SHIFT_MAX_DISTANCE
+        sampleNo = lastValueMin + generatePointShiftValue(lastPointShiftValue)
 
         actualX, actualY = math.floor(circleX + xChangePerSample * sampleNo), math.floor(circleY + yChangePerSample * sampleNo)
 
         map[(actualX, actualY)] = "X"
+
+        lastPointShiftValue = sampleNo
 
     state["mapData"] = map
 
