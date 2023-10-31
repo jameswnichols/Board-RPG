@@ -79,22 +79,37 @@ def generatePointsOnCircle(centre, radius, shiftMax):
     
     return pointValues, smallestValue
 
+def getPointOnLine(pos1, pos2, len):
+    lineLength = getLength(pos1, pos2)
+    xChange, yChange = (pos1[0] - pos2[0]) / lineLength, (pos1[1] - pos2[1]) / lineLength
+    return (pos1[0] + xChange * len, pos1[1] + yChange * len)
+
+def getAdjecentPoints(pos):
+    shifts = [(-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1)]
+
+    return [(pos[0]+s[0], pos[1]+s[1]) for s in shifts]
+
 def generateMap(state):
 
     map = setupMapDictionary()
 
     centreX, centreY = MAP_WIDTH // 2, MAP_HEIGHT // 2
 
-    radius = (MAP_WIDTH - centreX) * 0.8
+    shoreRadius = (MAP_WIDTH - centreX) * 0.8
 
-    pointValues, smallestValue = generatePointsOnCircle((centreX, centreY), radius, POINT_SHIFT_MAX_DISTANCE)
+    beachSize = (MAP_WIDTH - centreX) * 0.15
 
-    points = getPointsFromThreshold(pointValues, smallestValue, 0.65)
+    grassRadius = (MAP_WIDTH - centreX) * 0.65
+
+    grassSize = (MAP_WIDTH - centreX) * 0.15
+
+    shorePointValues, smallestValue = generatePointsOnCircle((centreX, centreY), shoreRadius, POINT_SHIFT_MAX_DISTANCE)
+
+    points = getPointsFromThreshold(shorePointValues, smallestValue, 0.65)
 
     for i, point in enumerate(points):
 
         pos1 = point["coord"]
-
         if i == len(points) - 1:
             pos2 = points[0]["coord"]
         else:
@@ -103,7 +118,16 @@ def generateMap(state):
         linePoints = generatePointsOnLine(pos1, pos2)
 
         for lp in linePoints:
-            map[lp] = "∴"
+
+            beachPoint = getPointOnLine(lp,(centreX,centreY),beachSize)
+
+            beachLinePoints = generatePointsOnLine(lp, beachPoint)
+
+            for blp in beachLinePoints:
+                
+                for adjP in getAdjecentPoints(blp):
+
+                    map[adjP] = "∴"
 
     state["mapData"] = map
 
