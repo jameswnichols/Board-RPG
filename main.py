@@ -29,9 +29,19 @@ def generatePointsOnLine(pos1, pos2):
     xPerSample, yPerSample = (pos1[0] - pos2[0]) / samplePoints, (pos1[1] - pos2[1]) / samplePoints
 
     for i in range(samplePoints):
-        points.append((pos1 + int(xPerSample * i), pos2 + int(yPerSample * i)))
+        points.append((pos1[0] - int(xPerSample * i), pos1[1] - int(yPerSample * i)))
 
     return points
+
+def getPointsFromThreshold(points, smallestValue, threshold):
+    thinPoints = []
+    for i, pointValue in enumerate(points):
+        pos, value = pointValue["coord"], abs(pointValue["value"])
+
+        if abs(value - abs(smallestValue)) > abs(smallestValue) * threshold: #0.65
+            thinPoints.append(pointValue)
+    
+    return thinPoints
 
 def generateMap(state):
 
@@ -72,12 +82,21 @@ def generateMap(state):
 
         #map[(actualX, actualY)] = "X"
 
-    for i, pointValue in enumerate(pointValues):
-        pos, value = pointValue["coord"], abs(pointValue["value"])
+    points = getPointsFromThreshold(pointValues, smallestValue, 0.65)
 
+    for i, point in enumerate(points):
 
-        if abs(value - abs(smallestValue)) > abs(smallestValue) * 0.65:
-            map[pos] = "X"
+        pos1 = point["coord"]
+
+        if i == len(points) - 1:
+            pos2 = points[0]["coord"]
+        else:
+            pos2 = points[i + 1]["coord"]
+
+        linePoints = generatePointsOnLine(pos1, pos2)
+
+        for lp in linePoints:
+            map[lp] = "X"
 
     state["mapData"] = map
 
