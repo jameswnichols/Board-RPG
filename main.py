@@ -261,8 +261,6 @@ def generateMap(state):
 
         villageCrossroads = getRandomPointsInCircle(pos, VILLAGE_RADIUS, 4)
 
-        #islandRing(map, pos, VILLAGE_RADIUS, 0, 1, 0, "!")
-
         roadPositions = []
         
         for cr in villageCrossroads:
