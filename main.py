@@ -22,7 +22,7 @@ POSSIBLE_COMBOS = {(0, 0, 0, 0):" ",
                    (1, 0, 0, 0):"═",
                    (1, 0, 0, 1):"╗",
                    (1, 0, 1, 0):"═",
-                   (1, 0, 1, 1):"╩",
+                   (1, 0, 1, 1):"╦",
                    (1, 1, 0, 0):"╝",
                    (1, 1, 0, 1):"╣",
                    (1, 1, 1, 0):"╩",
@@ -146,7 +146,14 @@ def getRandomPointsInCircle(centre, radius, amount):
         randomX = centreX + rValue * math.cos(angle)
         randomY = centreY + rValue * math.sin(angle)
         pos = (int(randomX), int(randomY))
-        if pos not in points:
+
+        notNearby = True
+        for point in points:
+            if abs(point[0] - pos[0]) == 1 or abs(point[1] - pos[1]) == 1:
+                notNearby = False
+                break
+
+        if pos not in points and notNearby:
             points.append(pos)
     
     return points
@@ -182,6 +189,7 @@ def getBoundsOfCirclePoint(centre, radius, point):
 
 def getRoadAdjecent(map, pos):
     posX, posY = pos
+    emptyPositions = []
     checks = [(posX - 1, posY), (posX, posY - 1), (posX + 1, posY), (posX, posY + 1)]
 
     adj = []
@@ -191,9 +199,11 @@ def getRoadAdjecent(map, pos):
         if map[check] == "." or map[check] in POSSIBLE_COMBOS.values():
             adj.append(1)
         else:
+            if check not in emptyPositions:
+                emptyPositions.append(check)
             adj.append(0)
 
-    return tuple(adj)
+    return emptyPositions, tuple(adj)
 
 
 def islandRing(map, centre, radius, shiftMaxDistance, ringSize, threshold, tile, getValidPoints = False, validDistance = 0, validRadius = 0):
@@ -241,7 +251,7 @@ def generateMap(state):
     superMountainSize = (MAP_WIDTH - centreX) * 0.15
 
     islandRing(map, (centreX, centreY), shoreRadius, POINT_SHIFT_MAX_DISTANCE, shoreSize, 0.65, "…")
-    villagePositions = islandRing(map, (centreX, centreY), grassRadius, POINT_SHIFT_MAX_DISTANCE, grassSize, 0.65, "≡", True,grassSize/3,VILLAGE_RADIUS)
+    villagePositions = islandRing(map, (centreX, centreY), grassRadius, POINT_SHIFT_MAX_DISTANCE, grassSize, 0.65, "≡", True,grassSize/2.5,VILLAGE_RADIUS)
     islandRing(map, (centreX, centreY), mountainRadius, POINT_SHIFT_MAX_DISTANCE+10, mountainSize, 0.35, "^") #≙
     islandRing(map, (centreX, centreY), superMountainRadius, POINT_SHIFT_MAX_DISTANCE+50, superMountainSize, 0.35, "Ʌ")
 
@@ -249,9 +259,9 @@ def generateMap(state):
 
     for pos in villagePositions:
 
-        villageCrossroads = getRandomPointsInCircle(pos, VILLAGE_RADIUS, 1)
+        villageCrossroads = getRandomPointsInCircle(pos, VILLAGE_RADIUS, 4)
 
-        islandRing(map, pos, VILLAGE_RADIUS, 0, 1, 0, "!")
+        #islandRing(map, pos, VILLAGE_RADIUS, 0, 1, 0, "!")
 
         roadPositions = []
         
@@ -265,9 +275,16 @@ def generateMap(state):
             for y in range(smallY, largeY):
                 map[(cr[0], y)] = "."
                 roadPositions.append((cr[0], y))
-                
+
+        houseLocations = []
+
         for rp in roadPositions:
-            map[rp] = POSSIBLE_COMBOS[getRoadAdjecent(map, rp)]
+            empty, adj = getRoadAdjecent(map, rp)
+            map[rp] = POSSIBLE_COMBOS[adj]
+            houseLocations.extend(empty)
+        
+        for houseLoc in houseLocations:
+            map[houseLoc] = "⌂"
 
     state["mapData"] = map
 
