@@ -134,7 +134,18 @@ def getRandomPointsInCircle(centre, radius, amount):
     return points
 
 def quadraticFormula(a, b, c):
-    pass
+    outputs = []
+    rightHalf = math.sqrt(b**2 - 2 * a * c)
+    options = [rightHalf, -rightHalf]
+
+    for option in options:
+        topHalf = -b + option
+        solution = topHalf / (2 * a)
+        outputs.append(solution)
+    
+    return outputs
+        
+        
 
 def getBoundsOfCirclePoint(centre, radius, point):
     pass
