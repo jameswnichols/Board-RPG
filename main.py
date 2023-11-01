@@ -164,6 +164,11 @@ def generateMap(state):
     islandRing(map, (centreX, centreY), mountainRadius, POINT_SHIFT_MAX_DISTANCE+10, mountainSize, 0.35, "^") #≙
     islandRing(map, (centreX, centreY), superMountainRadius, POINT_SHIFT_MAX_DISTANCE+50, superMountainSize, 0.35, "Ʌ")
 
+    villagePositions = pickVillagePoints(villagePositions, 5)
+
+    for pos in villagePositions:
+        islandRing(map, pos, 2, 0, 1, 0.5, "!")
+
     state["mapData"] = map
 
 def renderMap(state):
