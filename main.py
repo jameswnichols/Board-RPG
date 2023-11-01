@@ -121,7 +121,7 @@ def getAdjecentPoints(pos):
 
 def getRandomPointsInCircle(centre, radius, amount):
     points = []
-    while amount != len(points) - 1:
+    while amount != len(points):
         centreX, centreY = centre
         rValue = radius * math.sqrt(random.random())
         angle = random.random() * 2 * math.pi
@@ -154,7 +154,13 @@ def getBoundsOfCirclePoint(centre, radius, point):
     c = ((pointX - centreX)**2) + (centreY**2) - (radius**2)
     yValues = quadraticFormula(a, b, c)
 
-    return yValues
+    #Find x values next
+    a = 1
+    b = -2 * centreX
+    c = ((pointY - centreY)**2) + (centreX)**2 - (radius**2)
+    xValues = quadraticFormula(a, b, c)
+
+    return ([int(x) for x in xValues], [int(y) for y in yValues])
 
 def islandRing(map, centre, radius, shiftMaxDistance, ringSize, threshold, tile, getValidPoints = False, validDistance = 0, validRadius = 0):
     circlePoints, smallestValue = generatePointsOnCircle(centre, radius, shiftMaxDistance)
@@ -211,11 +217,16 @@ def generateMap(state):
 
     for pos in villagePositions:
 
-        villageCrossroads = getRandomPointsInCircle(pos, VILLAGE_RADIUS, 10)
+        villageCrossroads = getRandomPointsInCircle(pos, VILLAGE_RADIUS, 1)
 
         islandRing(map, pos, VILLAGE_RADIUS, 0, 1, 0, "!")
 
         for cr in villageCrossroads:
+            crXEdges, crYEdges  = getBoundsOfCirclePoint(pos, VILLAGE_RADIUS, cr)
+            smallX, largeX = min(crXEdges), max(crXEdges)
+            smallY, largeY = min(crYEdges), max(crYEdges)
+            for x in range(smallX, largeX+1):
+                map[(x, cr[1])] = "═"
             map[cr] = "╬"
 
     state["mapData"] = map
