@@ -71,6 +71,9 @@ def generatePointsOnLine(pos1, pos2):
     return removeDuplicates(points)
 
 def getPointsFromThreshold(points, smallestValue, threshold):
+    if threshold == 0:
+        return points
+    
     thinPoints = []
     for i, pointValue in enumerate(points):
         _, value = pointValue["coord"], abs(pointValue["value"])
@@ -116,7 +119,7 @@ def getAdjecentPoints(pos):
 
     return [(pos[0]+s[0], pos[1]+s[1]) for s in shifts]
 
-def islandRing(map, centre, radius, shiftMaxDistance, ringSize, threshold, tile, getValidPoints = False, validDistance = 0):
+def islandRing(map, centre, radius, shiftMaxDistance, ringSize, threshold, tile, getValidPoints = False, validDistance = 0, validRadius = 0):
     circlePoints, smallestValue = generatePointsOnCircle(centre, radius, shiftMaxDistance)
     points = getPointsFromThreshold(circlePoints, smallestValue, threshold)
 
@@ -133,7 +136,7 @@ def islandRing(map, centre, radius, shiftMaxDistance, ringSize, threshold, tile,
             innerRingPoint = getPointOnLine(lp,centre,ringSize)
             ringWidthPoints = generatePointsOnLine(lp, innerRingPoint)
             for i, rwp in enumerate(ringWidthPoints):
-                if getLength(lp, rwp) >= validDistance and getLength(lp, rwp) < ringSize - validDistance:
+                if getLength(lp, rwp) <= validDistance-validRadius and getLength(lp, rwp) > validRadius:
                     validPoints.append(rwp)
                 for adjP in getAdjecentPoints(rwp):
                     map[adjP] = tile
@@ -161,14 +164,17 @@ def generateMap(state):
     superMountainSize = (MAP_WIDTH - centreX) * 0.15
 
     islandRing(map, (centreX, centreY), shoreRadius, POINT_SHIFT_MAX_DISTANCE, shoreSize, 0.65, "…")
-    villagePositions = islandRing(map, (centreX, centreY), grassRadius, POINT_SHIFT_MAX_DISTANCE, grassSize, 0.65, "≡", True, VILLAGE_RADIUS)
+    villagePositions = islandRing(map, (centreX, centreY), grassRadius, POINT_SHIFT_MAX_DISTANCE, grassSize, 0.65, "≡", True,grassSize/3,VILLAGE_RADIUS)
     islandRing(map, (centreX, centreY), mountainRadius, POINT_SHIFT_MAX_DISTANCE+10, mountainSize, 0.35, "^") #≙
     islandRing(map, (centreX, centreY), superMountainRadius, POINT_SHIFT_MAX_DISTANCE+50, superMountainSize, 0.35, "Ʌ")
 
     villagePositions = pickVillagePoints(villagePositions, 5)
 
+    print(villagePositions)
+
     for pos in villagePositions:
-        islandRing(map, pos, VILLAGE_RADIUS, 0, 1, 0.5, "!")
+
+        islandRing(map, pos, VILLAGE_RADIUS, 0, 2, 0, "!")
 
     state["mapData"] = map
 
