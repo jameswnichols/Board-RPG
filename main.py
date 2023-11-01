@@ -135,7 +135,7 @@ def getRandomPointsInCircle(centre, radius, amount):
 
 def quadraticFormula(a, b, c):
     outputs = []
-    rightHalf = math.sqrt(b**2 - 2 * a * c)
+    rightHalf = math.sqrt(b**2 - (4 * a * c))
     options = [rightHalf, -rightHalf]
 
     for option in options:
@@ -144,11 +144,17 @@ def quadraticFormula(a, b, c):
         outputs.append(solution)
     
     return outputs
-        
-        
 
 def getBoundsOfCirclePoint(centre, radius, point):
-    pass
+    #Find y values first
+    centreX, centreY = centre
+    pointX, pointY = point
+    a = 1
+    b = -2 * centreY
+    c = ((pointX - centreX)**2) + (centreY**2) - (radius**2)
+    yValues = quadraticFormula(a, b, c)
+
+    return yValues
 
 def islandRing(map, centre, radius, shiftMaxDistance, ringSize, threshold, tile, getValidPoints = False, validDistance = 0, validRadius = 0):
     circlePoints, smallestValue = generatePointsOnCircle(centre, radius, shiftMaxDistance)
@@ -238,6 +244,8 @@ def testMap(state, times):
 
 def generateState():
     state = {"playerInfo":{"position":{"x":0,"y":0}},"mapData":{}, "objectData":{}}
+
+    print(getBoundsOfCirclePoint((10,10),5,(8,10)))
 
     generateMap(state)
 
