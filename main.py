@@ -9,6 +9,22 @@ POINT_SHIFT_SAMPLES = 100
 POINT_SHIFT_MAX_DISTANCE = 15
 
 VILLAGE_RADIUS = 5
+VILLAGE_EXCLUSION_RADIUS = 15
+
+def checkIfCirclesOverlap(centre1, radius1, centre2, radius2):
+    pass
+
+def pickVillagePoints(pointList : list, amount : int):
+
+    pointListReduced = pointList
+
+    points = []
+    pickedSoFar = 0
+
+    while pickedSoFar != amount:
+
+        randomIndex = random.randint(0, len(pointListReduced))
+
 
 def setupMapDictionary():
     map = {}
