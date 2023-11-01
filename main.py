@@ -119,6 +119,21 @@ def getAdjecentPoints(pos):
 
     return [(pos[0]+s[0], pos[1]+s[1]) for s in shifts]
 
+def getRandomPointsInCircle(centre, radius, amount):
+    points = []
+    while amount != len(points) - 1:
+        centreX, centreY = centre
+        rValue = radius * math.sqrt(random.random())
+        angle = random.random() * 2 * math.pi
+        randomX = centreX + rValue * math.cos(angle)
+        randomY = centreY + rValue * math.sin(angle)
+        pos = (int(randomX), int(randomY))
+        if pos not in points:
+            points.append(pos)
+    
+    return points
+
+
 def islandRing(map, centre, radius, shiftMaxDistance, ringSize, threshold, tile, getValidPoints = False, validDistance = 0, validRadius = 0):
     circlePoints, smallestValue = generatePointsOnCircle(centre, radius, shiftMaxDistance)
     points = getPointsFromThreshold(circlePoints, smallestValue, threshold)
@@ -174,7 +189,7 @@ def generateMap(state):
 
     for pos in villagePositions:
 
-        islandRing(map, pos, VILLAGE_RADIUS, 0, 2, 0, "!")
+        islandRing(map, pos, VILLAGE_RADIUS, 0, 1, 0, "!")
 
     state["mapData"] = map
 
