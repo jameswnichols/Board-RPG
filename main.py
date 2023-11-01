@@ -13,6 +13,7 @@ def setupMapDictionary():
     for y in range(MAP_HEIGHT):
         for x in range(MAP_WIDTH):
             map[(x, y)] = " "
+
     return map
 
 def generatePointShiftValue(val):
@@ -24,13 +25,9 @@ def getLength(pos1, pos2):
 def generatePointsOnLine(pos1, pos2):
     if pos1 == pos2:
         return []
-    
     samplePoints = int(getLength(pos1, pos2) * 2)
-
     points = []
-
     xPerSample, yPerSample = (pos1[0] - pos2[0]) / samplePoints, (pos1[1] - pos2[1]) / samplePoints
-
     for i in range(samplePoints):
         points.append((pos1[0] - int(xPerSample * i), pos1[1] - int(yPerSample * i)))
 
@@ -40,7 +37,6 @@ def getPointsFromThreshold(points, smallestValue, threshold):
     thinPoints = []
     for i, pointValue in enumerate(points):
         pos, value = pointValue["coord"], abs(pointValue["value"])
-
         if abs(value - abs(smallestValue)) > abs(smallestValue) * threshold: #0.65
             thinPoints.append(pointValue)
     
@@ -48,36 +44,26 @@ def getPointsFromThreshold(points, smallestValue, threshold):
 
 def generatePointsOnCircle(centre, radius, shiftMax):
     sampleStep = (2 * math.pi) / MAP_SAMPLE_SEGMENTS
-
     centreX, centreY = centre
-
     radius = radius
-
     smallestValue = 0
-
     pointValues = []
 
     for i in range(MAP_SAMPLE_SEGMENTS):
 
         #Get point on circle at i
-        
         steppedRadians = sampleStep * i
-
         circleX = radius * (math.cos(steppedRadians)) + centreX
-
         circleY = radius * (math.sin(steppedRadians)) + centreY
 
         #Offset each point a bit
-
         xChangePerSample, yChangePerSample = (circleX - centreX) / POINT_SHIFT_SAMPLES, (circleY - centreY) / POINT_SHIFT_SAMPLES
-
         sampleNo = generatePointShiftValue(shiftMax)
-
         if sampleNo < smallestValue:
             smallestValue = sampleNo
 
+        #Calculate shifted position and add to dict.
         actualX, actualY = math.floor(circleX + xChangePerSample * sampleNo), math.floor(circleY + yChangePerSample * sampleNo)
-
         pointValues.append({"coord":(actualX, actualY),"value":sampleNo})
     
     return pointValues, smallestValue
@@ -85,6 +71,7 @@ def generatePointsOnCircle(centre, radius, shiftMax):
 def getPointOnLine(pos1, pos2, len):
     lineLength = getLength(pos1, pos2)
     xChange, yChange = (pos1[0] - pos2[0]) / lineLength, (pos1[1] - pos2[1]) / lineLength
+
     return (pos1[0] - xChange * len, pos1[1] - yChange * len)
 
 def getAdjecentPoints(pos):
@@ -93,37 +80,24 @@ def getAdjecentPoints(pos):
     return [(pos[0]+s[0], pos[1]+s[1]) for s in shifts]
 
 def islandRing(map, centre, radius, shiftMaxDistance, ringSize, threshold, tile):
-
     circlePoints, smallestValue = generatePointsOnCircle(centre, radius, shiftMaxDistance)
-
     points = getPointsFromThreshold(circlePoints, smallestValue, threshold)
-
     for i, point in enumerate(points):
-
         pos1 = point["coord"]
         if i == len(points) - 1:
             pos2 = points[0]["coord"]
         else:
             pos2 = points[i + 1]["coord"]
-
         linePoints = generatePointsOnLine(pos1, pos2)
-
         for lp in linePoints:
-
             innerRingPoint = getPointOnLine(lp,centre,ringSize)
-
             ringWidthPoints = generatePointsOnLine(lp, innerRingPoint)
-
             for rwp in ringWidthPoints:
-                
                 for adjP in getAdjecentPoints(rwp):
-
                     map[adjP] = tile
 
 def generateMap(state):
-
     map = setupMapDictionary()
-
     centreX, centreY = MAP_WIDTH // 2, MAP_HEIGHT // 2
 
     #Beach
@@ -143,77 +117,38 @@ def generateMap(state):
     superMountainSize = (MAP_WIDTH - centreX) * 0.15
 
     islandRing(map, (centreX, centreY), shoreRadius, POINT_SHIFT_MAX_DISTANCE, shoreSize, 0.65, "∴")
-
     islandRing(map, (centreX, centreY), grassRadius, POINT_SHIFT_MAX_DISTANCE, grassSize, 0.65, "≡")
-
     islandRing(map, (centreX, centreY), mountainRadius, POINT_SHIFT_MAX_DISTANCE+10, mountainSize, 0.35, "^") #≙
-
     islandRing(map, (centreX, centreY), superMountainRadius, POINT_SHIFT_MAX_DISTANCE+50, superMountainSize, 0.35, "Ʌ")
-
-    # shorePointValues, smallestValue = generatePointsOnCircle((centreX, centreY), shoreRadius, POINT_SHIFT_MAX_DISTANCE)
-
-    # points = getPointsFromThreshold(shorePointValues, smallestValue, 0.65)
-
-    # for i, point in enumerate(points):
-
-    #     pos1 = point["coord"]
-    #     if i == len(points) - 1:
-    #         pos2 = points[0]["coord"]
-    #     else:
-    #         pos2 = points[i + 1]["coord"]
-
-    #     linePoints = generatePointsOnLine(pos1, pos2)
-
-    #     for lp in linePoints:
-
-    #         beachPoint = getPointOnLine(lp,(centreX,centreY),beachSize)
-
-    #         beachLinePoints = generatePointsOnLine(lp, beachPoint)
-
-    #         for blp in beachLinePoints:
-                
-    #             for adjP in getAdjecentPoints(blp):
-
-    #                 map[adjP] = "∴"
 
     state["mapData"] = map
 
 def renderMap(state):
     mapData = state["mapData"]
-
     mapLines = []
-
     for y in range(MAP_HEIGHT):
         mapLine = []
         for x in range(MAP_WIDTH):
             mapLine.append(mapData[(x, y)])
-        
         mapLines.append(" ".join(mapLine)+"\n")
-    
     with open("test.txt","w") as f:
         f.writelines(mapLines)
 
 def testMap(state, times):
     fails = 0
-
     for i in range(0, times):
         print(f"Try: {i+1}")
         try:
             generateMap(state)
         except:
             fails += 1
-    
-    return fails
+    print(f"Test failed {fails} times.")
 
 
 def generateState():
     state = {"playerInfo":{"position":{"x":0,"y":0}},"mapData":{}, "objectData":{}}
 
     generateMap(state)
-
-    # fails = testMap(state, 50)
-
-    # print(f"Test failed {fails} times.")
 
     renderMap(state)
 
