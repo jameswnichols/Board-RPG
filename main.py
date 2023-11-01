@@ -10,6 +10,24 @@ POINT_SHIFT_MAX_DISTANCE = 15
 
 VILLAGE_RADIUS = 5
 VILLAGE_EXCLUSION_RADIUS = 15
+#LEFT UP RIGHT DOWN
+POSSIBLE_COMBOS = {(0, 0, 0, 0):" ",
+                   (0, 0, 0, 1):"║",
+                   (0, 0, 1, 0):"═",
+                   (0, 0, 1, 1):"╔",
+                   (0, 1, 0, 0):"║",
+                   (0, 1, 0, 1):"║",
+                   (0, 1, 1, 0):"╚",
+                   (0, 1, 1, 1):"╠",
+                   (1, 0, 0, 0):"═",
+                   (1, 0, 0, 1):"╗",
+                   (1, 0, 1, 0):"═",
+                   (1, 0, 1, 1):"╩",
+                   (1, 1, 0, 0):"╝",
+                   (1, 1, 0, 1):"╣",
+                   (1, 1, 1, 0):"╩",
+                   (1, 1, 1, 1):"╬"}
+
 
 def checkIfCirclesOverlap(centre1, radius1, centre2, radius2):
     distance = getLength(centre1, centre2)
@@ -162,6 +180,20 @@ def getBoundsOfCirclePoint(centre, radius, point):
 
     return ([int(x) for x in xValues], [int(y) for y in yValues])
 
+def getRoadAdjecent(map, pos):
+    posX, posY = pos
+    checks = [(posX - 1, posY), (posX, posY - 1), (posX + 1, posY), (posX, posY + 1)]
+
+    nearby = 0
+
+    for check in checks:
+        
+        if map[check] == ".":
+            nearby += 1
+
+    return nearby
+
+
 def islandRing(map, centre, radius, shiftMaxDistance, ringSize, threshold, tile, getValidPoints = False, validDistance = 0, validRadius = 0):
     circlePoints, smallestValue = generatePointsOnCircle(centre, radius, shiftMaxDistance)
     points = getPointsFromThreshold(circlePoints, smallestValue, threshold)
@@ -213,21 +245,28 @@ def generateMap(state):
 
     villagePositions = pickVillagePoints(villagePositions, 5)
 
-    print(villagePositions)
-
     for pos in villagePositions:
 
         villageCrossroads = getRandomPointsInCircle(pos, VILLAGE_RADIUS, 1)
 
         islandRing(map, pos, VILLAGE_RADIUS, 0, 1, 0, "!")
 
+        roadPositions = []
+        
         for cr in villageCrossroads:
             crXEdges, crYEdges  = getBoundsOfCirclePoint(pos, VILLAGE_RADIUS, cr)
             smallX, largeX = min(crXEdges), max(crXEdges)
             smallY, largeY = min(crYEdges), max(crYEdges)
             for x in range(smallX, largeX+1):
-                map[(x, cr[1])] = "═"
-            map[cr] = "╬"
+                map[(x, cr[1])] = "."
+                roadPositions.append((x, cr[1]))
+            for y in range(smallY, largeY):
+                map[(cr[0], y)] = "."
+                roadPositions.append((cr[0], y))
+
+        for rp in roadPositions:
+            map[rp] = getRoadAdjecent(map, pos)
+            #map[cr] = "╬"
 
     state["mapData"] = map
 
@@ -255,8 +294,6 @@ def testMap(state, times):
 
 def generateState():
     state = {"playerInfo":{"position":{"x":0,"y":0}},"mapData":{}, "objectData":{}}
-
-    print(getBoundsOfCirclePoint((10,10),5,(8,10)))
 
     generateMap(state)
 
