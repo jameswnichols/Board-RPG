@@ -8,6 +8,8 @@ MAP_SAMPLE_SEGMENTS = 100
 POINT_SHIFT_SAMPLES = 100
 POINT_SHIFT_MAX_DISTANCE = 15
 
+VILLAGE_RADIUS = 5
+
 def setupMapDictionary():
     map = {}
     for y in range(MAP_HEIGHT):
@@ -22,6 +24,9 @@ def generatePointShiftValue(val):
 def getLength(pos1, pos2):
     return math.sqrt((pos1[0]-pos2[0])**2+(pos1[1]-pos2[1])**2)
 
+def removeDuplicates(l : list):
+    return list({x : 0 for x in l}.keys())
+
 def generatePointsOnLine(pos1, pos2):
     if pos1 == pos2:
         return []
@@ -31,7 +36,7 @@ def generatePointsOnLine(pos1, pos2):
     for i in range(samplePoints):
         points.append((pos1[0] - int(xPerSample * i), pos1[1] - int(yPerSample * i)))
 
-    return points
+    return removeDuplicates(points)
 
 def getPointsFromThreshold(points, smallestValue, threshold):
     thinPoints = []
@@ -79,9 +84,12 @@ def getAdjecentPoints(pos):
 
     return [(pos[0]+s[0], pos[1]+s[1]) for s in shifts]
 
-def islandRing(map, centre, radius, shiftMaxDistance, ringSize, threshold, tile):
+def islandRing(map, centre, radius, shiftMaxDistance, ringSize, threshold, tile, getValidPoints = False, validDistance = 0):
     circlePoints, smallestValue = generatePointsOnCircle(centre, radius, shiftMaxDistance)
     points = getPointsFromThreshold(circlePoints, smallestValue, threshold)
+
+    validPoints = []
+
     for i, point in enumerate(points):
         pos1 = point["coord"]
         if i == len(points) - 1:
@@ -92,9 +100,15 @@ def islandRing(map, centre, radius, shiftMaxDistance, ringSize, threshold, tile)
         for lp in linePoints:
             innerRingPoint = getPointOnLine(lp,centre,ringSize)
             ringWidthPoints = generatePointsOnLine(lp, innerRingPoint)
-            for rwp in ringWidthPoints:
+            for i, rwp in enumerate(ringWidthPoints):
+
+                if getValidPoints and i > validDistance and i < len(ringWidthPoints)-1-validDistance:
+                    validPoints.append(rwp)
+
                 for adjP in getAdjecentPoints(rwp):
                     map[adjP] = tile
+
+    return validPoints
 
 def generateMap(state):
     map = setupMapDictionary()
@@ -102,7 +116,7 @@ def generateMap(state):
 
     #Beach
     shoreRadius = (MAP_WIDTH - centreX) * 0.8
-    shoreSize = (MAP_WIDTH - centreX) * 0.20
+    shoreSize = (MAP_WIDTH - centreX) * 0.5
 
     #Grass
     grassRadius = (MAP_WIDTH - centreX) * 0.69
@@ -117,7 +131,7 @@ def generateMap(state):
     superMountainSize = (MAP_WIDTH - centreX) * 0.15
 
     islandRing(map, (centreX, centreY), shoreRadius, POINT_SHIFT_MAX_DISTANCE, shoreSize, 0.65, "…")
-    islandRing(map, (centreX, centreY), grassRadius, POINT_SHIFT_MAX_DISTANCE, grassSize, 0.65, "≡")
+    villagePositions = islandRing(map, (centreX, centreY), grassRadius, POINT_SHIFT_MAX_DISTANCE, grassSize, 0.65, "≡", True, VILLAGE_RADIUS)
     islandRing(map, (centreX, centreY), mountainRadius, POINT_SHIFT_MAX_DISTANCE+10, mountainSize, 0.35, "^") #≙
     islandRing(map, (centreX, centreY), superMountainRadius, POINT_SHIFT_MAX_DISTANCE+50, superMountainSize, 0.35, "Ʌ")
 
