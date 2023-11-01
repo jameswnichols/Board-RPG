@@ -12,18 +12,33 @@ VILLAGE_RADIUS = 5
 VILLAGE_EXCLUSION_RADIUS = 15
 
 def checkIfCirclesOverlap(centre1, radius1, centre2, radius2):
-    pass
+    distance = getLength(centre1, centre2)
+    if distance <= radius1 - radius2 or distance <= radius2 - radius1:
+        return True
+    if distance < radius1 + radius2 or distance == radius1 + radius2:
+        return True
+
+    return False
 
 def pickVillagePoints(pointList : list, amount : int):
-
     pointListReduced = pointList
-
     points = []
     pickedSoFar = 0
-
     while pickedSoFar != amount:
-
         randomIndex = random.randint(0, len(pointListReduced))
+        randomPoint = pointListReduced[randomIndex]
+        
+        hasOverlapped = False
+        for point in points:
+            if checkIfCirclesOverlap(point, VILLAGE_EXCLUSION_RADIUS, randomPoint, VILLAGE_EXCLUSION_RADIUS):
+                hasOverlapped = True
+                break
+
+        if not hasOverlapped:
+            points.append(randomPoint)
+            del pointListReduced[randomIndex]
+    
+    return points
 
 
 def setupMapDictionary():
@@ -117,10 +132,8 @@ def islandRing(map, centre, radius, shiftMaxDistance, ringSize, threshold, tile,
             innerRingPoint = getPointOnLine(lp,centre,ringSize)
             ringWidthPoints = generatePointsOnLine(lp, innerRingPoint)
             for i, rwp in enumerate(ringWidthPoints):
-
-                if getValidPoints and i > validDistance and i < len(ringWidthPoints)-1-validDistance:
+                if getLength(lp, rwp) >= validDistance and getLength(lp, rwp) < ringSize - validDistance:
                     validPoints.append(rwp)
-
                 for adjP in getAdjecentPoints(rwp):
                     map[adjP] = tile
 
