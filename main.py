@@ -184,14 +184,16 @@ def getRoadAdjecent(map, pos):
     posX, posY = pos
     checks = [(posX - 1, posY), (posX, posY - 1), (posX + 1, posY), (posX, posY + 1)]
 
-    nearby = 0
+    adj = []
 
     for check in checks:
         
-        if map[check] == ".":
-            nearby += 1
+        if map[check] == "." or map[check] in POSSIBLE_COMBOS.values():
+            adj.append(1)
+        else:
+            adj.append(0)
 
-    return nearby
+    return tuple(adj)
 
 
 def islandRing(map, centre, radius, shiftMaxDistance, ringSize, threshold, tile, getValidPoints = False, validDistance = 0, validRadius = 0):
@@ -263,10 +265,9 @@ def generateMap(state):
             for y in range(smallY, largeY):
                 map[(cr[0], y)] = "."
                 roadPositions.append((cr[0], y))
-
+                
         for rp in roadPositions:
-            map[rp] = getRoadAdjecent(map, pos)
-            #map[cr] = "╬"
+            map[rp] = POSSIBLE_COMBOS[getRoadAdjecent(map, rp)]
 
     state["mapData"] = map
 
