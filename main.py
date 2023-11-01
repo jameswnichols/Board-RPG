@@ -133,6 +133,11 @@ def getRandomPointsInCircle(centre, radius, amount):
     
     return points
 
+def quadraticFormula(a, b, c):
+    pass
+
+def getBoundsOfCirclePoint(centre, radius, point):
+    pass
 
 def islandRing(map, centre, radius, shiftMaxDistance, ringSize, threshold, tile, getValidPoints = False, validDistance = 0, validRadius = 0):
     circlePoints, smallestValue = generatePointsOnCircle(centre, radius, shiftMaxDistance)
@@ -189,7 +194,12 @@ def generateMap(state):
 
     for pos in villagePositions:
 
+        villageCrossroads = getRandomPointsInCircle(pos, VILLAGE_RADIUS, 10)
+
         islandRing(map, pos, VILLAGE_RADIUS, 0, 1, 0, "!")
+
+        for cr in villageCrossroads:
+            map[cr] = "╬"
 
     state["mapData"] = map
 
