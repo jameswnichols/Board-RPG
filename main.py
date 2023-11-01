@@ -36,7 +36,7 @@ def generatePointsOnLine(pos1, pos2):
 def getPointsFromThreshold(points, smallestValue, threshold):
     thinPoints = []
     for i, pointValue in enumerate(points):
-        pos, value = pointValue["coord"], abs(pointValue["value"])
+        _, value = pointValue["coord"], abs(pointValue["value"])
         if abs(value - abs(smallestValue)) > abs(smallestValue) * threshold: #0.65
             thinPoints.append(pointValue)
     
@@ -116,7 +116,7 @@ def generateMap(state):
     superMountainRadius = (MAP_WIDTH - centreX) * 0.15
     superMountainSize = (MAP_WIDTH - centreX) * 0.15
 
-    islandRing(map, (centreX, centreY), shoreRadius, POINT_SHIFT_MAX_DISTANCE, shoreSize, 0.65, "∴")
+    islandRing(map, (centreX, centreY), shoreRadius, POINT_SHIFT_MAX_DISTANCE, shoreSize, 0.65, "…")
     islandRing(map, (centreX, centreY), grassRadius, POINT_SHIFT_MAX_DISTANCE, grassSize, 0.65, "≡")
     islandRing(map, (centreX, centreY), mountainRadius, POINT_SHIFT_MAX_DISTANCE+10, mountainSize, 0.35, "^") #≙
     islandRing(map, (centreX, centreY), superMountainRadius, POINT_SHIFT_MAX_DISTANCE+50, superMountainSize, 0.35, "Ʌ")
@@ -131,7 +131,7 @@ def renderMap(state):
         for x in range(MAP_WIDTH):
             mapLine.append(mapData[(x, y)])
         mapLines.append(" ".join(mapLine)+"\n")
-    with open("test.txt","w") as f:
+    with open("map.txt","w") as f:
         f.writelines(mapLines)
 
 def testMap(state, times):
