@@ -25,7 +25,7 @@ def pickVillagePoints(pointList : list, amount : int):
     points = []
     pickedSoFar = 0
     while pickedSoFar != amount:
-        randomIndex = random.randint(0, len(pointListReduced))
+        randomIndex = random.randint(0, len(pointListReduced)-1)
         randomPoint = pointListReduced[randomIndex]
         
         hasOverlapped = False
@@ -37,6 +37,7 @@ def pickVillagePoints(pointList : list, amount : int):
         if not hasOverlapped:
             points.append(randomPoint)
             del pointListReduced[randomIndex]
+            pickedSoFar += 1
     
     return points
 
@@ -167,7 +168,7 @@ def generateMap(state):
     villagePositions = pickVillagePoints(villagePositions, 5)
 
     for pos in villagePositions:
-        islandRing(map, pos, 2, 0, 1, 0.5, "!")
+        islandRing(map, pos, VILLAGE_RADIUS, 0, 1, 0.5, "!")
 
     state["mapData"] = map
 
