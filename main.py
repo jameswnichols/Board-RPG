@@ -3,6 +3,9 @@
 import random
 import math
 
+#New village generation, pick a single point on the circle then for each subsequent point pick one of the points on that road and expand on it.
+#Each "spawn" has a random length for each of the 4 cardinal directions.
+
 MAP_WIDTH = 200
 MAP_HEIGHT = 200
 
