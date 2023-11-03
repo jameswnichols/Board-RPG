@@ -5,7 +5,7 @@ Features:
 - Has an island map which changes each time you play.
 - ???
 
-Has some restricions in place:
+Restrictions:
 - Not allowed to use `continue`, `break` or `pass`.
 - Not allowed to use `class` - no object orientation allowed.
 - Not allowed to use `global` - for the best.
