@@ -1,3 +1,5 @@
+#https://github.com/jameswnichols/Board-RPG
+
 import random
 import math
 
@@ -230,32 +232,8 @@ def islandRing(map, centre, radius, shiftMaxDistance, ringSize, threshold, tile,
 
     return validPoints
 
-def generateMap(state):
-    map = setupMapDictionary()
-    centreX, centreY = MAP_WIDTH // 2, MAP_HEIGHT // 2
-
-    #Beach
-    shoreRadius = (MAP_WIDTH - centreX) * 0.8
-    shoreSize = (MAP_WIDTH - centreX) * 0.5
-
-    #Grass
-    grassRadius = (MAP_WIDTH - centreX) * 0.69
-    grassSize = (MAP_WIDTH - centreX) * 0.5
-
-    #Small Mountaims
-    mountainRadius = (MAP_WIDTH - centreX) * 0.35
-    mountainSize = (MAP_WIDTH - centreX) * 0.35
-
-    #Tall Mountains
-    superMountainRadius = (MAP_WIDTH - centreX) * 0.15
-    superMountainSize = (MAP_WIDTH - centreX) * 0.15
-
-    islandRing(map, (centreX, centreY), shoreRadius, POINT_SHIFT_MAX_DISTANCE, shoreSize, 0.65, "…")
-    villagePositions = islandRing(map, (centreX, centreY), grassRadius, POINT_SHIFT_MAX_DISTANCE, grassSize, 0.65, "≡", True,grassSize/2.5,VILLAGE_RADIUS)
-    islandRing(map, (centreX, centreY), mountainRadius, POINT_SHIFT_MAX_DISTANCE+10, mountainSize, 0.35, "^") #≙
-    islandRing(map, (centreX, centreY), superMountainRadius, POINT_SHIFT_MAX_DISTANCE+50, superMountainSize, 0.35, "Ʌ")
-
-    villagePositions = pickVillagePoints(villagePositions, 5)
+def generateVillages(map, possiblePositions : list):
+    villagePositions = pickVillagePoints(possiblePositions, 5)
 
     for pos in villagePositions:
 
@@ -283,6 +261,33 @@ def generateMap(state):
         
         for houseLoc in houseLocations:
             map[houseLoc] = "⌂"
+
+def generateMap(state):
+    map = setupMapDictionary()
+    centreX, centreY = MAP_WIDTH // 2, MAP_HEIGHT // 2
+
+    #Beach
+    shoreRadius = (MAP_WIDTH - centreX) * 0.8
+    shoreSize = (MAP_WIDTH - centreX) * 0.5
+
+    #Grass
+    grassRadius = (MAP_WIDTH - centreX) * 0.69
+    grassSize = (MAP_WIDTH - centreX) * 0.5
+
+    #Small Mountaims
+    mountainRadius = (MAP_WIDTH - centreX) * 0.35
+    mountainSize = (MAP_WIDTH - centreX) * 0.35
+
+    #Tall Mountains
+    superMountainRadius = (MAP_WIDTH - centreX) * 0.15
+    superMountainSize = (MAP_WIDTH - centreX) * 0.15
+
+    islandRing(map, (centreX, centreY), shoreRadius, POINT_SHIFT_MAX_DISTANCE, shoreSize, 0.55, "…")
+    villagePositions = islandRing(map, (centreX, centreY), grassRadius, POINT_SHIFT_MAX_DISTANCE, grassSize, 0.65, "≡", True,grassSize/2.5,VILLAGE_RADIUS)
+    islandRing(map, (centreX, centreY), mountainRadius, POINT_SHIFT_MAX_DISTANCE+10, mountainSize, 0.35, "^") #≙
+    islandRing(map, (centreX, centreY), superMountainRadius, POINT_SHIFT_MAX_DISTANCE+50, superMountainSize, 0.35, "Ʌ")
+
+    generateVillages(map, villagePositions)
 
     state["mapData"] = map
 
