@@ -1,6 +1,10 @@
 # Board RPG
 A 2D randomly-generated game made for my Year 1 Semester 1 programming project.
 
+Features:
+- Has an island map which changes each time you play.
+- ???
+
 Has some restricions in place:
 - Not allowed to use `continue`, `break` or `pass`.
 - Not allowed to use `class` - no object orientation allowed.
