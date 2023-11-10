@@ -36,7 +36,6 @@ POSSIBLE_COMBOS = {(0, 0, 0, 0):" ",
                    (1, 1, 1, 0):"╩",
                    (1, 1, 1, 1):"╬"}
 
-
 def checkIfCirclesOverlap(centre1, radius1, centre2, radius2):
     distance = getLength(centre1, centre2)
     if distance <= radius1 - radius2 or distance <= radius2 - radius1:
@@ -240,6 +239,7 @@ def islandRing(map, centre, radius, shiftMaxDistance, ringSize, threshold, tile,
                     
                     if getAllPoints:
                         pointDict[adjP] = ringName
+                        pointDict["baseTiles"].add(tile)
 
     return validPoints
 
@@ -273,18 +273,26 @@ def generateVillages(map, possiblePositions : list):
         for houseLoc in houseLocations:
             map[houseLoc] = "⌂"
 
-def getSpawnLocations(pointDict : dict):
-    spawnLists = {x : [] for x in set(list(pointDict.values()))}
+def getSpawnLocations(map, pointDict : dict):
+
+    spawnLists = {}
+
+    baseTiles = pointDict["baseTiles"]
+
+    for val in list(pointDict.values()):
+        if (not isinstance(val, set)) and val not in spawnLists:
+            spawnLists[val] = []
 
     for pos, spawn in pointDict.items():
-        spawnLists[spawn].append(pos)
+        if (not isinstance(spawn, set)) and map[pos] in baseTiles:
+            spawnLists[spawn].append(pos)
     
     return spawnLists
 
 def generateMap(state):
     map = setupMapDictionary()
 
-    spawningPoints = {}
+    spawningPoints = {"baseTiles":set()}
 
     centreX, centreY = MAP_WIDTH // 2, MAP_HEIGHT // 2
 
@@ -309,9 +317,9 @@ def generateMap(state):
     islandRing(map, (centreX, centreY), mountainRadius, POINT_SHIFT_MAX_DISTANCE+10, mountainSize, 0.35, "^", False, 0, 0, spawningPoints, "hills") #≙
     islandRing(map, (centreX, centreY), superMountainRadius, POINT_SHIFT_MAX_DISTANCE+50, superMountainSize, 0.35, "Ʌ", False, 0, 0, spawningPoints, "mountains")
 
-    spawnLists = getSpawnLocations(spawningPoints)
-
     generateVillages(map, villagePositions)
+
+    spawnLists = getSpawnLocations(map, spawningPoints)
 
     state["mapData"] = map
 
