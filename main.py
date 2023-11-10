@@ -2,12 +2,15 @@
 
 import random
 import math
+import os
 
 #New village generation, pick a single point on the circle then for each subsequent point pick one of the points on that road and expand on it.
 #Each "spawn" has a random length for each of the 4 cardinal directions.
 
 MAP_WIDTH = 200
 MAP_HEIGHT = 200
+
+SCREEN_WIDTH, SCREEN_HEIGHT = os.get_terminal_size()
 
 MAP_SAMPLE_SEGMENTS = 100
 POINT_SHIFT_SAMPLES = 100
@@ -211,11 +214,13 @@ def getRoadAdjecent(map, pos):
     return emptyPositions, tuple(adj)
 
 
-def islandRing(map, centre, radius, shiftMaxDistance, ringSize, threshold, tile, getValidPoints = False, validDistance = 0, validRadius = 0):
+def islandRing(map, centre, radius, shiftMaxDistance, ringSize, threshold, tile, getValidPoints = False, validDistance = 0, validRadius = 0, pointDict = None, ringName = ""):
     circlePoints, smallestValue = generatePointsOnCircle(centre, radius, shiftMaxDistance)
     points = getPointsFromThreshold(circlePoints, smallestValue, threshold)
 
     validPoints = []
+    
+    getAllPoints = isinstance(pointDict, dict)
 
     for i, point in enumerate(points):
         pos1 = point["coord"]
@@ -232,11 +237,14 @@ def islandRing(map, centre, radius, shiftMaxDistance, ringSize, threshold, tile,
                     validPoints.append(rwp)
                 for adjP in getAdjecentPoints(rwp):
                     map[adjP] = tile
+                    
+                    if getAllPoints:
+                        pointDict[adjP] = ringName
 
     return validPoints
 
 def generateVillages(map, possiblePositions : list):
-    villagePositions = pickVillagePoints(possiblePositions, 5)
+    villagePositions = pickVillagePoints(possiblePositions, 3)
 
     for pos in villagePositions:
 
@@ -267,6 +275,9 @@ def generateVillages(map, possiblePositions : list):
 
 def generateMap(state):
     map = setupMapDictionary()
+
+    spawningPoints = {}
+
     centreX, centreY = MAP_WIDTH // 2, MAP_HEIGHT // 2
 
     #Beach
@@ -285,10 +296,10 @@ def generateMap(state):
     superMountainRadius = (MAP_WIDTH - centreX) * 0.15
     superMountainSize = (MAP_WIDTH - centreX) * 0.15
 
-    islandRing(map, (centreX, centreY), shoreRadius, POINT_SHIFT_MAX_DISTANCE, shoreSize, 0.55, "…")
-    villagePositions = islandRing(map, (centreX, centreY), grassRadius, POINT_SHIFT_MAX_DISTANCE, grassSize, 0.65, "≡", True,grassSize/2.5,VILLAGE_RADIUS)
-    islandRing(map, (centreX, centreY), mountainRadius, POINT_SHIFT_MAX_DISTANCE+10, mountainSize, 0.35, "^") #≙
-    islandRing(map, (centreX, centreY), superMountainRadius, POINT_SHIFT_MAX_DISTANCE+50, superMountainSize, 0.35, "Ʌ")
+    islandRing(map, (centreX, centreY), shoreRadius, POINT_SHIFT_MAX_DISTANCE, shoreSize, 0.55, "…", False, 0, 0, spawningPoints, "beach")
+    villagePositions = islandRing(map, (centreX, centreY), grassRadius, POINT_SHIFT_MAX_DISTANCE, grassSize, 0.65, "≡", True,grassSize/2.5,VILLAGE_RADIUS, spawningPoints, "grass")
+    islandRing(map, (centreX, centreY), mountainRadius, POINT_SHIFT_MAX_DISTANCE+10, mountainSize, 0.35, "^", False, 0, 0, spawningPoints, "hills") #≙
+    islandRing(map, (centreX, centreY), superMountainRadius, POINT_SHIFT_MAX_DISTANCE+50, superMountainSize, 0.35, "Ʌ", False, 0, 0, spawningPoints, "mountains")
 
     generateVillages(map, villagePositions)
 
@@ -317,7 +328,7 @@ def testMap(state, times):
 
 
 def generateState():
-    state = {"playerInfo":{"position":{"x":0,"y":0}},"mapData":{}, "objectData":{}}
+    state = {"playerInfo":{"position":{"x":0,"y":0},"direction":(0, -1)},"mapData":{}, "objectData":{}}
 
     generateMap(state)
 
