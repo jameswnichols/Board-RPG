@@ -36,6 +36,10 @@ POSSIBLE_COMBOS = {(0, 0, 0, 0):" ",
                    (1, 1, 1, 0):"╩",
                    (1, 1, 1, 1):"╬"}
 
+TREE_AMOUNT = 1500
+
+HILL_TREE_AMOUNT = 500
+
 def checkIfCirclesOverlap(centre1, radius1, centre2, radius2):
     distance = getLength(centre1, centre2)
     if distance <= radius1 - radius2 or distance <= radius2 - radius1:
@@ -320,6 +324,16 @@ def generateMap(state):
     generateVillages(map, villagePositions)
 
     spawnLists = getSpawnLocations(map, spawningPoints)
+
+    treeSpawns = random.sample(spawnLists["grass"],TREE_AMOUNT)
+
+    for pos in treeSpawns:
+        map[pos] = "♣"
+
+    hillTreeSpawns = random.sample(spawnLists["hills"], HILL_TREE_AMOUNT)
+
+    for pos in hillTreeSpawns:
+        map[pos] = "↟"
 
     state["mapData"] = map
 
