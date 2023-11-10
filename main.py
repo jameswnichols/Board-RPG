@@ -273,6 +273,14 @@ def generateVillages(map, possiblePositions : list):
         for houseLoc in houseLocations:
             map[houseLoc] = "⌂"
 
+def getSpawnLocations(pointDict : dict):
+    spawnLists = {x : [] for x in set(list(pointDict.values()))}
+
+    for pos, spawn in pointDict.items():
+        spawnLists[spawn].append(pos)
+    
+    return spawnLists
+
 def generateMap(state):
     map = setupMapDictionary()
 
@@ -300,6 +308,8 @@ def generateMap(state):
     villagePositions = islandRing(map, (centreX, centreY), grassRadius, POINT_SHIFT_MAX_DISTANCE, grassSize, 0.65, "≡", True,grassSize/2.5,VILLAGE_RADIUS, spawningPoints, "grass")
     islandRing(map, (centreX, centreY), mountainRadius, POINT_SHIFT_MAX_DISTANCE+10, mountainSize, 0.35, "^", False, 0, 0, spawningPoints, "hills") #≙
     islandRing(map, (centreX, centreY), superMountainRadius, POINT_SHIFT_MAX_DISTANCE+50, superMountainSize, 0.35, "Ʌ", False, 0, 0, spawningPoints, "mountains")
+
+    spawnLists = getSpawnLocations(spawningPoints)
 
     generateVillages(map, villagePositions)
 
