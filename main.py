@@ -12,6 +12,8 @@ MAP_HEIGHT = 200
 
 SCREEN_WIDTH, SCREEN_HEIGHT = os.get_terminal_size()
 
+SCREEN_HEIGHT -= 1
+
 MAP_SAMPLE_SEGMENTS = 100
 POINT_SHIFT_SAMPLES = 100
 POINT_SHIFT_MAX_DISTANCE = 15
@@ -293,8 +295,28 @@ def getSpawnLocations(map, pointDict : dict):
     
     return spawnLists
 
+def sampleWithRemove(possibleItems, amount):
+    chosen = []
+
+    for i in range(0, amount):
+        randomIndex = random.randint(0, len(possibleItems)-1)
+
+        chosen.append(possibleItems[randomIndex])
+
+        del possibleItems[randomIndex]
+    
+    return chosen
+
+def generateObjects(objectData, possibleSpawns, spawnAmount, symbol):
+    chosenSpawns = sampleWithRemove(possibleSpawns,spawnAmount)#random.sample(possibleSpawns,spawnAmount)
+    
+    for spawn in chosenSpawns:
+        objectData[spawn] = {"objectType":"intTile","display":symbol}
+
 def generateMap(state):
     map = setupMapDictionary()
+
+    objectData = {}
 
     spawningPoints = {"baseTiles":set()}
 
@@ -325,25 +347,28 @@ def generateMap(state):
 
     spawnLists = getSpawnLocations(map, spawningPoints)
 
-    treeSpawns = random.sample(spawnLists["grass"],TREE_AMOUNT)
+    generateObjects(objectData, spawnLists["grass"],TREE_AMOUNT, "♣")
 
-    for pos in treeSpawns:
-        map[pos] = "♣"
-
-    hillTreeSpawns = random.sample(spawnLists["hills"], HILL_TREE_AMOUNT)
-
-    for pos in hillTreeSpawns:
-        map[pos] = "↟"
+    generateObjects(objectData, spawnLists["hills"],HILL_TREE_AMOUNT,"↟")
 
     state["mapData"] = map
 
+    state["objectData"] = objectData
+
 def renderMap(state):
     mapData = state["mapData"]
+    objectData = state["objectData"]
     mapLines = []
     for y in range(MAP_HEIGHT):
         mapLine = []
         for x in range(MAP_WIDTH):
-            mapLine.append(mapData[(x, y)])
+
+            mapTile = mapData[(x, y)]
+            
+            if (x, y) in objectData:
+                mapTile = objectData[(x, y)]["display"]
+            
+            mapLine.append(mapTile)
         mapLines.append(" ".join(mapLine)+"\n")
     with open("map.txt","w") as f:
         f.writelines(mapLines)
