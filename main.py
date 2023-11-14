@@ -42,6 +42,10 @@ TREE_AMOUNT = 1500
 
 HILL_TREE_AMOUNT = 500
 
+HILL_ROCK_AMOUNT = 20
+
+MOUNTAIN_ROCK_AMOUNT = 150
+
 def checkIfCirclesOverlap(centre1, radius1, centre2, radius2):
     distance = getLength(centre1, centre2)
     if distance <= radius1 - radius2 or distance <= radius2 - radius1:
@@ -297,19 +301,18 @@ def getSpawnLocations(map, pointDict : dict):
 
 def sampleWithRemove(possibleItems, amount):
     chosen = []
-
     for i in range(0, amount):
-        randomIndex = random.randint(0, len(possibleItems)-1)
+        try:
+            randomIndex = random.randint(0, len(possibleItems)-1)
+            chosen.append(possibleItems[randomIndex])
+            del possibleItems[randomIndex]
+        except:
+            return chosen
 
-        chosen.append(possibleItems[randomIndex])
-
-        del possibleItems[randomIndex]
-    
     return chosen
 
 def generateObjects(objectData, possibleSpawns, spawnAmount, symbol):
     chosenSpawns = sampleWithRemove(possibleSpawns,spawnAmount)#random.sample(possibleSpawns,spawnAmount)
-    
     for spawn in chosenSpawns:
         objectData[spawn] = {"objectType":"intTile","display":symbol}
 
@@ -334,6 +337,10 @@ def generateMap(state):
     mountainRadius = (MAP_WIDTH - centreX) * 0.35
     mountainSize = (MAP_WIDTH - centreX) * 0.35
 
+    #Inner Hills
+    innerHillRadius = (MAP_WIDTH - centreX) * 0.21
+    innerHillSize = (MAP_WIDTH - centreX) * 0.21
+
     #Tall Mountains
     superMountainRadius = (MAP_WIDTH - centreX) * 0.15
     superMountainSize = (MAP_WIDTH - centreX) * 0.15
@@ -341,6 +348,7 @@ def generateMap(state):
     islandRing(map, (centreX, centreY), shoreRadius, POINT_SHIFT_MAX_DISTANCE, shoreSize, 0.55, "…", False, 0, 0, spawningPoints, "beach")
     villagePositions = islandRing(map, (centreX, centreY), grassRadius, POINT_SHIFT_MAX_DISTANCE, grassSize, 0.65, "≡", True,grassSize/2.5,VILLAGE_RADIUS, spawningPoints, "grass")
     islandRing(map, (centreX, centreY), mountainRadius, POINT_SHIFT_MAX_DISTANCE+10, mountainSize, 0.35, "^", False, 0, 0, spawningPoints, "hills") #≙
+    islandRing(map, (centreX, centreY), innerHillRadius, 1, innerHillSize, 0.35, "^", False, 0, 0, spawningPoints, "innerHills")
     islandRing(map, (centreX, centreY), superMountainRadius, POINT_SHIFT_MAX_DISTANCE+50, superMountainSize, 0.35, "Ʌ", False, 0, 0, spawningPoints, "mountains")
 
     generateVillages(map, villagePositions)
@@ -350,6 +358,10 @@ def generateMap(state):
     generateObjects(objectData, spawnLists["grass"],TREE_AMOUNT, "♣")
 
     generateObjects(objectData, spawnLists["hills"],HILL_TREE_AMOUNT,"↟")
+
+    generateObjects(objectData, spawnLists["innerHills"], HILL_ROCK_AMOUNT, "☁")
+
+    generateObjects(objectData, spawnLists["mountains"], MOUNTAIN_ROCK_AMOUNT, "☁")
 
     state["mapData"] = map
 
