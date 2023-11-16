@@ -395,8 +395,18 @@ def writeTextToScreen(screen, text, position):
         if (newX >= 0 and newX < screenWidth) and (newY >= 0 and newY < screenHeight):
             screen["data"][(newX, newY)] = char
 
-def renderScreen(screen):
-    pass
+def renderScreenToConsole(screen, offset = (0, 0)):
+    screenX, screenY = offset
+    screenWidth, screenHeight = screen["width"], screen["height"]
+    for y in range(SCREEN_HEIGHT):
+        line = ""
+        for x in range(SCREEN_WIDTH):
+            writeData = " "
+            if screenX < x < screenX + screenWidth and screenY < y < screenY + screenHeight:
+                actualX, actualY = x-screenX, y-screenY
+                writeData = screen["data"][(actualX, actualY)]
+            line += writeData
+        print(line)
 
 
 def renderMap(state):
