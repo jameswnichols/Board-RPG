@@ -47,6 +47,17 @@ PLAYER_DIRECTIONS = {(0, 1):"↑",
                      (-1, 0):"←",
                      (-1, 1):"↖",}
 
+VALID_DIRECTIONS = {"n":(0, 1),
+                    "ne":(1, 1),
+                    "e":(1, 0),
+                    "se":(1, -1),
+                    "s":(0, -1),
+                    "sw":(-1, -1),
+                    "w":(-1, 0),
+                    "nw":(-1, 1)}
+
+VALID_DIRECTIONS_LOOKUP = {y : x for x, y in VALID_DIRECTIONS.items()}
+
 TREE_AMOUNT = 1500
 
 HILL_TREE_AMOUNT = 500
@@ -489,18 +500,23 @@ def show(state : dict, arg : str):
         state["renderView"] = "inventory"
 
 def changePlayerDirection(state : dict, arg : str):
-    validDirections = {"n":(0, 1),"ne":(1, 1),"e":(1, 0),"se":(1, -1),"s":(0, -1),"sw":(-1, -1),"w":(-1, 0),"nw":(-1, 1)}
-
-    if arg in validDirections:
-        state["playerData"]["direction"] = validDirections[arg]
+    if arg in VALID_DIRECTIONS:
+        state["playerData"]["direction"] = VALID_DIRECTIONS[arg]
         state["renderView"] = "showBoard"
 
 def movePlayer(state : dict, arg : str):
-    pass
+    playerX, playerY = state["playerData"]["position"]
+    playerDirX, playerDirY = state["playerData"]["direction"]
+    if arg in ["f","for","forwards"]:
+        state["playerData"]["position"] = (playerX+playerDirX,playerY+playerDirY)
+    if arg in ["b","back","backwards"]:
+        pass
+    state["renderView"] = "showBoard"
 
 COMMANDS = {
     "show" : show,
-    "dir" : changePlayerDirection
+    "dir" : changePlayerDirection,
+    "move" : movePlayer
 }
 
 def generateState():
