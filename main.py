@@ -380,16 +380,16 @@ def generateMap(state):
 
     state["objectData"] = objectData
 
-def generateScreen(size : tuple[int, int]):
+def generateScreen(size : tuple[int, int], char : str = " "):
     width, height = size
     screen = {"width":width, "height":height, "data":{}}
     for y in range(height):
         for x in range(width):
-            screen["data"][(x, y)] = " "
+            screen["data"][(x, y)] = char
 
     return screen
 
-def writeTextToScreen(screen : dict, text : str, position : tuple[int, int]):
+def writeTextToScreen(screen : dict, text : str, position : tuple[int, int] = (0, 0)):
     screenWidth, screenHeight = screen["width"], screen["height"]
     for i, char in enumerate(list(text)):
         newX, newY = position[0]+i, position[1]
@@ -403,7 +403,7 @@ def renderScreenToConsole(screen : dict, offset : tuple[int, int] = (0, 0)):
         line = ""
         for x in range(SCREEN_WIDTH):
             writeData = " "
-            if screenX < x < screenX + screenWidth and screenY < y < screenY + screenHeight:
+            if screenX <= x < screenX + screenWidth and screenY <= y < screenY + screenHeight:
                 actualX, actualY = x-screenX, y-screenY
                 writeData = screen["data"][(actualX, actualY)]
             line += writeData
@@ -452,8 +452,16 @@ def generateState():
 
 if __name__ == "__main__":
 
-    tenByTen = generateScreen((10, 10))
+    clearScreen()
 
+    inventory = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT), " ")
+
+    writeTextToScreen(inventory, "Wood x 10", (0, 0))
+    writeTextToScreen(inventory, "Stone x 100", (0, 1))
+
+    renderScreenToConsole(inventory, (0, 0))
+
+    input("Command > ")
 
     # state = generateState()
 
