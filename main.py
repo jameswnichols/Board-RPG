@@ -388,12 +388,15 @@ def generateScreen(width, height):
 
     return screen
 
-def renderToScreen(screen, text, position):
+def writeTextToScreen(screen, text, position):
     screenWidth, screenHeight = screen["width"], screen["height"]
     for i, char in enumerate(list(text)):
         newX, newY = position[0]+i, position[1]
         if (newX >= 0 and newX < screenWidth) and (newY >= 0 and newY < screenHeight):
             screen["data"][(newX, newY)] = char
+
+def renderScreen(screen):
+    pass
 
 
 def renderMap(state):
