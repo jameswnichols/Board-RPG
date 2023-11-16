@@ -381,15 +381,20 @@ def generateMap(state):
     state["objectData"] = objectData
 
 def generateScreen(width, height):
-    screen = {}
+    screen = {"width":width, "height":height, "data":{}}
     for y in range(height):
         for x in range(width):
-            screen[(x, y)] = " "
+            screen["data"][(x, y)] = " "
 
     return screen
 
 def renderToScreen(screen, text, position):
-    textLength = len(text)
+    screenWidth, screenHeight = screen["width"], screen["height"]
+    for i, char in enumerate(list(text)):
+        newX, newY = position[0]+i, position[1]
+        if (newX >= 0 and newX < screenWidth) and (newY >= 0 and newY < screenHeight):
+            screen["data"][(newX, newY)] = char
+
 
 def renderMap(state):
     mapData = state["mapData"]
