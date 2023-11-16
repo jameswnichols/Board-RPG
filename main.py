@@ -380,6 +380,17 @@ def generateMap(state):
 
     state["objectData"] = objectData
 
+def generateScreen(width, height):
+    screen = {}
+    for y in range(height):
+        for x in range(width):
+            screen[(x, y)] = " "
+
+    return screen
+
+def renderToScreen(screen, text, position):
+    textLength = len(text)
+
 def renderMap(state):
     mapData = state["mapData"]
     objectData = state["objectData"]
@@ -408,6 +419,8 @@ def testMap(state, times):
             fails += 1
     print(f"Test failed {fails} times.")
 
+def clearScreen():
+    print("\n" * (SCREEN_HEIGHT + 1))
 
 def generateState():
     state = {"playerData":{"position":(0, 0),"direction":(0, 1)},"mapData":{}, "objectData":{}}
@@ -420,3 +433,11 @@ def generateState():
 
 if __name__ == "__main__":
     state = generateState()
+
+    running = True
+
+    while running:
+
+        clearScreen()
+
+    
