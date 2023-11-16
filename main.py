@@ -409,6 +409,8 @@ def renderScreenToConsole(screen : dict, offset : tuple[int, int] = (0, 0)):
             line += writeData
         print(line)
 
+def clearConsole():
+    print("\n" * (SCREEN_HEIGHT + 1))
 
 def renderMap(state):
     mapData = state["mapData"]
@@ -428,18 +430,7 @@ def renderMap(state):
     with open("map.txt","w") as f:
         f.writelines(mapLines)
 
-def testMap(state, times):
-    fails = 0
-    for i in range(0, times):
-        print(f"Try: {i+1}")
-        try:
-            generateMap(state)
-        except:
-            fails += 1
-    print(f"Test failed {fails} times.")
 
-def clearScreen():
-    print("\n" * (SCREEN_HEIGHT + 1))
 
 def generateState():
     state = {"playerData":{"position":(0, 0),"direction":(0, 1)},"mapData":{}, "objectData":{}}
@@ -452,9 +443,9 @@ def generateState():
 
 if __name__ == "__main__":
 
-    clearScreen()
+    clearConsole()
 
-    inventory = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT), " ")
+    inventory = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT))
 
     writeTextToScreen(inventory, "Wood x 10", (0, 0))
     writeTextToScreen(inventory, "Stone x 100", (0, 1))
