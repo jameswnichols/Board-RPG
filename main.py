@@ -489,6 +489,13 @@ def show(state : dict, arg : str):
         state["renderView"] = "inventory"
 
 def changePlayerDirection(state : dict, arg : str):
+    validDirections = {"n":(0, 1),"ne":(1, 1),"e":(1, 0),"se":(1, -1),"s":(0, -1),"sw":(-1, -1),"w":(-1, 0),"nw":(-1, 1)}
+
+    if arg in validDirections:
+        state["playerData"]["direction"] = validDirections[arg]
+        state["renderView"] = "showBoard"
+
+def movePlayer(state : dict, arg : str):
     pass
 
 COMMANDS = {
