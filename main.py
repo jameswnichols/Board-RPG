@@ -44,7 +44,7 @@ HILL_TREE_AMOUNT = 500
 
 HILL_ROCK_AMOUNT = 20
 
-MOUNTAIN_ROCK_AMOUNT = 150
+MOUNTAIN_ROCK_AMOUNT = 100
 
 def checkIfCirclesOverlap(centre1, radius1, centre2, radius2):
     distance = getLength(centre1, centre2)
@@ -363,6 +363,10 @@ def generateMap(state):
 
     generateObjects(objectData, spawnLists["mountains"], MOUNTAIN_ROCK_AMOUNT, "☁")
 
+    playerSpawn = sampleWithRemove(spawnLists["beach"], 1)[0]
+
+    state["playerData"]["position"] = playerSpawn
+
     state["mapData"] = map
 
     state["objectData"] = objectData
@@ -397,7 +401,7 @@ def testMap(state, times):
 
 
 def generateState():
-    state = {"playerInfo":{"position":{"x":0,"y":0},"direction":(0, -1)},"mapData":{}, "objectData":{}}
+    state = {"playerData":{"position":(0, 0),"direction":(0, -1)},"mapData":{}, "objectData":{}}
 
     generateMap(state)
 
@@ -406,4 +410,4 @@ def generateState():
     return state
 
 if __name__ == "__main__":
-    generateState()
+    state = generateState()
