@@ -425,11 +425,19 @@ def show_board(state):
     board = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT))
     halfWidth, halfHeight = SCREEN_WIDTH//2, SCREEN_HEIGHT//2
     playerX, playerY = state["playerData"]["position"]
+    playerDirection = state["playerData"]["direction"]
     areaX, areaY = playerX-halfWidth, playerY - halfHeight
     for y in range(areaY, SCREEN_HEIGHT):
         for x in range(areaX, SCREEN_WIDTH):
-            pass
+            boardX, boardY = x-areaX, y-areaY
+            character = getMapTile(mapData, objectData, (x, y))
 
+            if x == playerX and y == playerY:
+                character = PLAYER_DIRECTIONS[playerDirection]
+
+            writeTextToScreen(board, character, (boardX, boardY))
+    
+    renderScreenToConsole(board)
 
 def renderMap(state):
     mapData = state["mapData"]
@@ -462,23 +470,16 @@ def generateState():
 
 if __name__ == "__main__":
 
-    clearConsole()
+    state = generateState()
 
-    inventory = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT))
+    running = True
 
-    writeTextToScreen(inventory, "Wood x 10", (0, 0))
-    writeTextToScreen(inventory, "Stone x 100", (0, 1))
+    while running:
 
-    renderScreenToConsole(inventory, (0, 0))
+        clearConsole()
 
-    input("Command > ")
+        show_board(state)
 
-    # state = generateState()
-
-    # running = True
-
-    # while running:
-
-    #     clearScreen()
+        input("Command > ")
 
     
