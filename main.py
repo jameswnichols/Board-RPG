@@ -321,7 +321,7 @@ def sampleWithRemove(possibleItems, amount):
     return chosen
 
 def generateObjects(objectData, possibleSpawns, spawnAmount, symbol):
-    chosenSpawns = sampleWithRemove(possibleSpawns,spawnAmount)#random.sample(possibleSpawns,spawnAmount)
+    chosenSpawns = sampleWithRemove(possibleSpawns,spawnAmount)
     for spawn in chosenSpawns:
         objectData[spawn] = {"objectType":"intTile","display":symbol}
 
