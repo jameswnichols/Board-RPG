@@ -427,8 +427,9 @@ def show_board(state):
     playerX, playerY = state["playerData"]["position"]
     playerDirection = state["playerData"]["direction"]
     areaX, areaY = playerX-halfWidth, playerY - halfHeight
-    for y in range(areaY, SCREEN_HEIGHT):
-        for x in range(areaX, SCREEN_WIDTH):
+
+    for y in range(areaY, areaY + SCREEN_HEIGHT):
+        for x in range(areaX, areaX + SCREEN_WIDTH):
             boardX, boardY = x-areaX, y-areaY
             character = getMapTile(mapData, objectData, (x, y))
 
