@@ -380,7 +380,8 @@ def generateMap(state):
 
     state["objectData"] = objectData
 
-def generateScreen(width, height):
+def generateScreen(size : tuple[int, int]):
+    width, height = size
     screen = {"width":width, "height":height, "data":{}}
     for y in range(height):
         for x in range(width):
@@ -388,14 +389,14 @@ def generateScreen(width, height):
 
     return screen
 
-def writeTextToScreen(screen, text, position):
+def writeTextToScreen(screen : dict, text : str, position : tuple[int, int]):
     screenWidth, screenHeight = screen["width"], screen["height"]
     for i, char in enumerate(list(text)):
         newX, newY = position[0]+i, position[1]
         if (newX >= 0 and newX < screenWidth) and (newY >= 0 and newY < screenHeight):
             screen["data"][(newX, newY)] = char
 
-def renderScreenToConsole(screen, offset = (0, 0)):
+def renderScreenToConsole(screen : dict, offset : tuple[int, int] = (0, 0)):
     screenX, screenY = offset
     screenWidth, screenHeight = screen["width"], screen["height"]
     for y in range(SCREEN_HEIGHT):
@@ -450,12 +451,16 @@ def generateState():
     return state
 
 if __name__ == "__main__":
-    state = generateState()
 
-    running = True
+    tenByTen = generateScreen((10, 10))
 
-    while running:
 
-        clearScreen()
+    # state = generateState()
+
+    # running = True
+
+    # while running:
+
+    #     clearScreen()
 
     
