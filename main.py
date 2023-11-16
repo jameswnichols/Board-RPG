@@ -412,6 +412,25 @@ def renderScreenToConsole(screen : dict, offset : tuple[int, int] = (0, 0)):
 def clearConsole():
     print("\n" * (SCREEN_HEIGHT + 1))
 
+def getMapTile(mapData, objectData, position):
+    if position in objectData:
+        return objectData[position]["display"]
+    if position in mapData:
+        return mapData[position]
+    return " "
+
+def show_board(state):
+    mapData = state["mapData"]
+    objectData = state["objectData"]
+    board = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT))
+    halfWidth, halfHeight = SCREEN_WIDTH//2, SCREEN_HEIGHT//2
+    playerX, playerY = state["playerData"]["position"]
+    areaX, areaY = playerX-halfWidth, playerY - halfHeight
+    for y in range(areaY, SCREEN_HEIGHT):
+        for x in range(areaX, SCREEN_WIDTH):
+            pass
+
+
 def renderMap(state):
     mapData = state["mapData"]
     objectData = state["objectData"]
