@@ -458,10 +458,46 @@ def renderMap(state):
     with open("map.txt","w") as f:
         f.writelines(mapLines)
 
+def renderView(state):
+    if not state["renderView"]:
+        return
+    view = state["renderView"]
+    if view == "showBoard":
+        show_board(state)
+    if view == "inventory":
+        pass
+    state["renderView"] = None
 
+def parseCommand(command : str):
+    splitCommand = command.strip().lower().split()
+
+    if len(splitCommand) > 2:
+        return
+
+    command = splitCommand[0]
+    arg = None if len(splitCommand) == 1 else splitCommand[1]
+
+    if command in COMMANDS:
+        COMMANDS[command](state, arg)
+
+    print(f"Command : {command} Arg : {arg}")
+
+def show(state : dict, arg : str):
+    if arg == "board":
+        state["renderView"] = "showBoard"
+    if arg == "inv":
+        state["renderView"] = "inventory"
+
+def changePlayerDirection(state : dict, arg : str):
+    pass
+
+COMMANDS = {
+    "show" : show,
+    "dir" : changePlayerDirection
+}
 
 def generateState():
-    state = {"playerData":{"position":(0, 0),"direction":(0, 1)},"mapData":{}, "objectData":{}}
+    state = {"renderView":None,"playerData":{"position":(0, 0),"direction":(0, 1),"inventory":{}},"mapData":{},"objectData":{}}
 
     generateMap(state)
 
@@ -479,8 +515,10 @@ if __name__ == "__main__":
 
         clearConsole()
 
-        show_board(state)
+        renderView(state)
 
-        input("Command > ")
+        playerCommand = input("Command > ")
+
+        parseCommand(playerCommand)
 
     
