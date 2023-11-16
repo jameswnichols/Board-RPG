@@ -410,7 +410,7 @@ def testMap(state, times):
 
 
 def generateState():
-    state = {"playerData":{"position":(0, 0),"direction":(0, -1)},"mapData":{}, "objectData":{}}
+    state = {"playerData":{"position":(0, 0),"direction":(0, 1)},"mapData":{}, "objectData":{}}
 
     generateMap(state)
 
