@@ -38,23 +38,23 @@ POSSIBLE_COMBOS = {(0, 0, 0, 0):" ",
                    (1, 1, 1, 0):"╩",
                    (1, 1, 1, 1):"╬"}
 
-PLAYER_DIRECTIONS = {(0, 1):"↑",
-                     (1, 1):"↗",
+PLAYER_DIRECTIONS = {(0, -1):"↑",
+                     (1, -1):"↗",
                      (1, 0):"→",
-                     (1, -1):"↘",
-                     (0, -1):"↓",
-                     (-1, -1):"↙",
+                     (1, 1):"↘",
+                     (0, 1):"↓",
+                     (-1, 1):"↙",
                      (-1, 0):"←",
-                     (-1, 1):"↖",}
+                     (-1, -1):"↖",}
 
-VALID_DIRECTIONS = {"n":(0, 1),
-                    "ne":(1, 1),
+VALID_DIRECTIONS = {"n":(0, -1),
+                    "ne":(1, -1),
                     "e":(1, 0),
-                    "se":(1, -1),
-                    "s":(0, -1),
-                    "sw":(-1, -1),
+                    "se":(1, 1),
+                    "s":(0, 1),
+                    "sw":(-1, 1),
                     "w":(-1, 0),
-                    "nw":(-1, 1)}
+                    "nw":(-1, -1)}
 
 VALID_DIRECTIONS_LOOKUP = {y : x for x, y in VALID_DIRECTIONS.items()}
 
@@ -499,20 +499,54 @@ def show(state : dict, arg : str):
     if arg == "inv":
         state["renderView"] = "inventory"
 
+def shiftIndex(l : list, index : int, shift : int):
+    direction = -1 if shift < 0 else 1
+    currentIndex = index
+    for i in range(0, abs(shift)):
+        currentIndex += direction
+        if currentIndex < 0:
+            currentIndex = len(l) - 1
+        if currentIndex == len(l):
+            currentIndex = 0
+    return currentIndex
+
 def changePlayerDirection(state : dict, arg : str):
     if arg in VALID_DIRECTIONS:
         state["playerData"]["direction"] = VALID_DIRECTIONS[arg]
         state["renderView"] = "showBoard"
 
 def movePlayer(state : dict, arg : str):
-    playerX, playerY = state["playerData"]["position"]
-    playerDirX, playerDirY = state["playerData"]["direction"]
-    if arg in ["f","for","forwards"]:
-        state["playerData"]["position"] = (playerX+playerDirX,playerY+playerDirY)
-    if arg in ["b","back","backwards"]:
-        pass
+
     state["renderView"] = "showBoard"
 
+    playerX, playerY = state["playerData"]["position"]
+    playerDirection = state["playerData"]["direction"]
+    playerDirX, playerDirY = playerDirection
+
+    directions = list(VALID_DIRECTIONS_LOOKUP.keys())
+    playerDirectionIndex = directions.index(playerDirection)
+
+    if arg in ["f","for","forwards"]:
+        state["playerData"]["position"] = (playerX+playerDirX,playerY+playerDirY)
+        return
+
+    validMove = True
+    moveShift = 0
+
+    if arg in ["b","back","backwards"]:
+        moveShift = -4
+    elif arg in ["l","left"]:
+        moveShift = -2
+    elif arg in ["r",'right']:
+        moveShift = 2
+    else:
+        validMove = False
+    
+    if validMove:
+        shiftedIndex = shiftIndex(directions, playerDirectionIndex, moveShift)
+        newDirectionX, newDirectionY = directions[shiftedIndex]
+        state["playerData"]["position"] = (playerX+newDirectionX,playerY+newDirectionY)
+    
 COMMANDS = {
     "show" : show,
     "dir" : changePlayerDirection,
