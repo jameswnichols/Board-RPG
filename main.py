@@ -482,16 +482,11 @@ def renderView(state):
 def parseCommand(command : str):
     splitCommand = command.strip().lower().split()
 
-    if len(splitCommand) > 2:
-        return
-
     command = splitCommand[0]
-    arg = None if len(splitCommand) == 1 else splitCommand[1]
+    arg = splitCommand[1:]
 
     if command in COMMANDS:
-        COMMANDS[command](state, arg)
-
-    print(f"Command : {command} Arg : {arg}")
+        COMMANDS[command](state, *arg)
 
 def show(state : dict, arg : str):
     if arg == "board":
@@ -515,13 +510,12 @@ def changePlayerDirection(state : dict, arg : str):
         state["playerData"]["direction"] = VALID_DIRECTIONS[arg]
         state["renderView"] = "showBoard"
 
-def movePlayer(state : dict, arg : str):
+def movePlayer(state : dict, arg : str, steps : int = 1):
 
     state["renderView"] = "showBoard"
 
     playerX, playerY = state["playerData"]["position"]
     playerDirection = state["playerData"]["direction"]
-    playerDirX, playerDirY = playerDirection
 
     directions = list(VALID_DIRECTIONS_LOOKUP.keys())
     playerDirectionIndex = directions.index(playerDirection)
