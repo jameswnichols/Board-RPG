@@ -5,6 +5,7 @@ import math
 import os
 import inspect
 import ast
+import time
 
 #New village generation, pick a single point on the circle then for each subsequent point pick one of the points on that road and expand on it.
 #Each "spawn" has a random length for each of the 4 cardinal directions.
@@ -601,10 +602,12 @@ def movePlayer(state : dict, arg : str = "f", steps : int = 1):
 
             if validPlayerPosition(state, newPosition):
                 state["playerData"]["position"] = newPosition
+                clearConsole()
+                show_board(state)
+                if shifted < steps:
+                    time.sleep(0.1)
             else:
                 wasLastMoveValid = False
-            
-        
 
 COMMANDS = {
     "show" : show,
