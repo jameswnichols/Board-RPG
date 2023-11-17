@@ -7,9 +7,7 @@ Features:
 
 Restrictions:
 - Only allowed to have one `main` file.
-- Not allowed to use `continue`, `break` or `pass`.
-- Not allowed to use `class` - no object orientation allowed.
-- Not allowed to use `global` - for the best.
+- Not allowed to use `continue`, `break`, `class`, `global` or `pass`.
 - Not allowed `while` loops that don't have a terminating condition.
 - Can only make functions that modify the `state` variable, can't modify it outside of them.
 - Must contain a `main()` function.
