@@ -451,7 +451,7 @@ def getMapTile(mapData, objectData, position):
 def show_board(state):
     mapData = state["mapData"]
     objectData = state["objectData"]
-    board = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT-1))
+    board = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT))
     halfWidth, halfHeight = SCREEN_WIDTH//2, SCREEN_HEIGHT//2
     playerX, playerY = state["playerData"]["position"]
     playerDirection = state["playerData"]["direction"]
@@ -467,7 +467,7 @@ def show_board(state):
 
             writeTextToScreen(board, character, (boardX, boardY))
     
-    renderScreenToConsole(board,(0, 1))
+    renderScreenToConsole(board)
 
 def renderMap(state):
     mapData = state["mapData"]
@@ -646,5 +646,6 @@ if __name__ == "__main__":
 
         #ABSOLUTELY HORRIBLE PRACTICE
         SCREEN_WIDTH, SCREEN_HEIGHT = os.get_terminal_size()
+        SCREEN_HEIGHT -= 1
 
     
