@@ -21,6 +21,8 @@ POINT_SHIFT_MAX_DISTANCE = 15
 
 VILLAGE_RADIUS = 5
 VILLAGE_EXCLUSION_RADIUS = 15
+MIN_HOUSES = 5
+MAX_HOUSES_PERCENTAGE = 0.5
 #LEFT UP RIGHT DOWN
 POSSIBLE_COMBOS = {(0, 0, 0, 0):" ",
                    (0, 0, 0, 1):"║",
@@ -58,6 +60,13 @@ VALID_DIRECTIONS = {"n":(0, -1),
                     "nw":(-1, -1)}
 
 VALID_DIRECTIONS_LOOKUP = {y : x for x, y in VALID_DIRECTIONS.items()}
+
+TERRAIN_REQUIRED_ITEM = {
+    "ocean":"UNOBTAINABLE",
+    "hills":"Snow Boots",
+    "innerHills":"Snow Boots",
+    "mountains":"Ice Picks"
+}
 
 TREE_AMOUNT = 1500
 
@@ -98,11 +107,11 @@ def pickVillagePoints(pointList : list, amount : int):
     return points
 
 
-def setupMapDictionary():
+def setupMapDictionary(char : str):
     map = {}
     for y in range(MAP_HEIGHT):
         for x in range(MAP_WIDTH):
-            map[(x, y)] = " "
+            map[(x, y)] = char
 
     return map
 
@@ -301,7 +310,9 @@ def generateVillages(map, possiblePositions : list):
             map[rp] = POSSIBLE_COMBOS[adj]
             houseLocations.extend(empty)
         
-        for houseLoc in houseLocations:
+        houseSamples = random.randint(MIN_HOUSES, int(len(houseLocations) * MAX_HOUSES_PERCENTAGE))
+
+        for houseLoc in random.sample(houseLocations, houseSamples):
             map[houseLoc] = "⌂"
 
 def getSpawnLocations(map, pointDict : dict):
@@ -338,11 +349,13 @@ def generateObjects(objectData, possibleSpawns, spawnAmount, symbol):
         objectData[spawn] = {"objectType":"intTile","display":symbol}
 
 def generateMap(state):
-    map = setupMapDictionary()
+    map = setupMapDictionary(" ")
 
     objectData = {}
 
-    spawningPoints = {"baseTiles":set()}
+    spawningPoints = setupMapDictionary("ocean")
+    
+    spawningPoints["baseTiles"] = {"ocean",}
 
     centreX, centreY = MAP_WIDTH // 2, MAP_HEIGHT // 2
 
@@ -371,6 +384,8 @@ def generateMap(state):
     islandRing(map, (centreX, centreY), mountainRadius, POINT_SHIFT_MAX_DISTANCE+10, mountainSize, 0.35, "^", False, 0, 0, spawningPoints, "hills") #≙
     islandRing(map, (centreX, centreY), innerHillRadius, 1, innerHillSize, 0.35, "^", False, 0, 0, spawningPoints, "innerHills")
     islandRing(map, (centreX, centreY), superMountainRadius, POINT_SHIFT_MAX_DISTANCE+50, superMountainSize, 0.35, "Ʌ", False, 0, 0, spawningPoints, "mountains")
+
+    state["islandMaskData"] = spawningPoints
 
     generateVillages(map, villagePositions)
 
@@ -544,7 +559,10 @@ def movePlayer(state : dict, arg : str, steps : int = 1):
     if validMove:
         shiftedIndex = shiftIndex(directions, playerDirectionIndex, moveShift)
         newDirectionX, newDirectionY = directions[shiftedIndex]
-        state["playerData"]["position"] = (playerX+newDirectionX,playerY+newDirectionY)
+        newPosition = (playerX+newDirectionX,playerY+newDirectionY)
+        terrainType = state["islandMaskData"][newPosition]
+        print(terrainType)
+        state["playerData"]["position"] = newPosition
 
 COMMANDS = {
     "show" : show,
@@ -564,6 +582,8 @@ def generateState():
 if __name__ == "__main__":
 
     state = generateState()
+
+    renderMap(state)
 
     running = True
 
