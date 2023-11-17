@@ -563,7 +563,7 @@ def validPlayerPosition(state : dict, position : tuple):
 
     return canTraverse
 
-def movePlayer(state : dict, arg : str, steps : int = 1):
+def movePlayer(state : dict, arg : str = "f", steps : int = 1):
 
     state["renderView"] = "showBoard"
 
