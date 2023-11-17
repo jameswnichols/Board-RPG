@@ -530,7 +530,7 @@ def movePlayer(state : dict, arg : str):
     moveShift = 0
     if arg in ["f","for","forwards"]:
         moveShift = 0
-    if arg in ["b","back","backwards"]:
+    elif arg in ["b","back","backwards"]:
         moveShift = -4
     elif arg in ["l","left"]:
         moveShift = -2
