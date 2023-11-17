@@ -502,11 +502,21 @@ def playerHasItem(state : dict, itemName : str):
 def getAmountOfItem(state : dict, itemName : str):
     return 0 if not playerHasItem(state, itemName) else state["playerData"]["inventory"][itemName]
 
+def convertArgs(argList : list):
+    convertedList = []
+    for arg in argList:
+        try:
+            convertedList.append(ast.literal_eval(arg))
+        except:
+            convertedList.append(arg)
+
+    return convertedList
+
 def parseCommand(command : str):
     splitCommand = command.strip().lower().split()
 
     command = splitCommand[0]
-    args = splitCommand[1:]
+    args = convertArgs(splitCommand[1:])
 
     if command in COMMANDS:
         functionSignature = inspect.signature(COMMANDS[command])
@@ -541,6 +551,7 @@ def changePlayerDirection(state : dict, arg : str):
         state["renderView"] = "showBoard"
 
 def validPlayerPosition(state : dict, position : tuple):
+
     terrainType = state["islandMaskData"][position]
 
     canTraverse = True
@@ -581,13 +592,18 @@ def movePlayer(state : dict, arg : str, steps : int = 1):
 
         newPosition = (playerX, playerY)
 
-        for i in range(0, steps):
+        wasLastMoveValid = True
+        shifted = 0
+
+        while shifted < steps and wasLastMoveValid:
+            shifted += 1
             newPosition = (newPosition[0]+newDirectionX,newPosition[1]+newDirectionY)
 
             if validPlayerPosition(state, newPosition):
                 state["playerData"]["position"] = newPosition
             else:
-                break
+                wasLastMoveValid = False
+            
         
 
 COMMANDS = {
