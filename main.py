@@ -572,6 +572,8 @@ def movePlayer(state : dict, arg : str, steps : int = 1):
 
         if terrainType in TERRAIN_REQUIRED_ITEM and not playerHasItem(state, TERRAIN_REQUIRED_ITEM[terrainType]):
             canTraverse = False
+        if newPosition in state["objectData"]:
+            canTraverse = False
 
         if canTraverse:
             state["playerData"]["position"] = newPosition
