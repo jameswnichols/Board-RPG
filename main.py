@@ -487,21 +487,14 @@ def parseCommand(command : str):
     args = splitCommand[1:]
 
     if command in COMMANDS:
-
         functionSignature = inspect.signature(COMMANDS[command])
-
         #-1 on allParameters and co_argcount because state is always supplied
-
         allParameters = len(functionSignature.parameters)-1
-
+        #DefaultArgs arent required so arent needed for minimum and are None if there isnt any so 0
         defaultArgs = 0 if not COMMANDS[command].__defaults__ else len(COMMANDS[command].__defaults__)
-
-        
         necessaryArgcount = COMMANDS[command].__code__.co_argcount-1 - defaultArgs
-
         if len(args) >= necessaryArgcount and len(args) <= allParameters:
             COMMANDS[command](state, *args)
-
 
 def show(state : dict, arg : str):
     if arg == "board":
@@ -552,7 +545,7 @@ def movePlayer(state : dict, arg : str, steps : int = 1):
         shiftedIndex = shiftIndex(directions, playerDirectionIndex, moveShift)
         newDirectionX, newDirectionY = directions[shiftedIndex]
         state["playerData"]["position"] = (playerX+newDirectionX,playerY+newDirectionY)
-    
+
 COMMANDS = {
     "show" : show,
     "dir" : changePlayerDirection,
@@ -560,7 +553,7 @@ COMMANDS = {
 }
 
 def generateState():
-    state = {"renderView":None,"playerData":{"position":(0, 0),"direction":(0, 1),"inventory":{}},"mapData":{},"objectData":{}}
+    state = {"renderView":None,"playerData":{"position":(0, 0),"direction":(0, 1),"inventory":{}},"mapData":{},"objectData":{},"islandMaskData":{}}
 
     generateMap(state)
 
