@@ -6,6 +6,7 @@ Features:
 - ???
 
 Restrictions:
+- Only allowed to have one `main` file.
 - Not allowed to use `continue`, `break` or `pass`.
 - Not allowed to use `class` - no object orientation allowed.
 - Not allowed to use `global` - for the best.
