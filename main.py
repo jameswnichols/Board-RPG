@@ -284,7 +284,7 @@ def islandRing(map, centre, radius, shiftMaxDistance, ringSize, threshold, tile,
 
     return validPoints
 
-def generateVillages(map, possiblePositions : list):
+def generateVillages(map, objectData, possiblePositions : list):
     villagePositions = pickVillagePoints(possiblePositions, 3)
 
     for pos in villagePositions:
@@ -314,7 +314,7 @@ def generateVillages(map, possiblePositions : list):
         houseSamples = random.randint(MIN_HOUSES, int(len(houseLocations) * MAX_HOUSES_PERCENTAGE))
 
         for houseLoc in random.sample(houseLocations, houseSamples):
-            map[houseLoc] = "⌂"
+            objectData[houseLoc] = {"objectType":"intTile","display":"⌂"}
 
 def getSpawnLocations(map, pointDict : dict):
 
@@ -388,7 +388,7 @@ def generateMap(state):
 
     state["islandMaskData"] = spawningPoints
 
-    generateVillages(map, villagePositions)
+    generateVillages(map, objectData, villagePositions)
 
     spawnLists = getSpawnLocations(map, spawningPoints)
 
