@@ -490,11 +490,13 @@ def parseCommand(command : str):
 
         functionSignature = inspect.signature(COMMANDS[command])
 
-        allParameters = len(functionSignature.parameters)
+        #-1 on allParameters and co_argcount because state is always supplied
+
+        allParameters = len(functionSignature.parameters)-1
 
         defaultArgs = 0 if not COMMANDS[command].__defaults__ else len(COMMANDS[command].__defaults__)
 
-        #-1 because state is always supplied
+        
         necessaryArgcount = COMMANDS[command].__code__.co_argcount-1 - defaultArgs
 
         if len(args) >= necessaryArgcount and len(args) <= allParameters:
