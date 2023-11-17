@@ -613,4 +613,7 @@ if __name__ == "__main__":
 
         parseCommand(playerCommand)
 
+        #ABSOLUTELY HORRIBLE PRACTICE
+        SCREEN_WIDTH, SCREEN_HEIGHT = os.get_terminal_size()
+
     
