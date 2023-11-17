@@ -3,6 +3,7 @@
 import random
 import math
 import os
+import inspect
 
 #New village generation, pick a single point on the circle then for each subsequent point pick one of the points on that road and expand on it.
 #Each "spawn" has a random length for each of the 4 cardinal directions.
@@ -483,10 +484,22 @@ def parseCommand(command : str):
     splitCommand = command.strip().lower().split()
 
     command = splitCommand[0]
-    arg = splitCommand[1:]
+    args = splitCommand[1:]
 
     if command in COMMANDS:
-        COMMANDS[command](state, *arg)
+
+        functionSignature = inspect.signature(COMMANDS[command])
+
+        allParameters = len(functionSignature.parameters)
+
+        defaultArgs = 0 if not COMMANDS[command].__defaults__ else len(COMMANDS[command].__defaults__)
+
+        #-1 because state is always supplied
+        necessaryArgcount = COMMANDS[command].__code__.co_argcount-1 - defaultArgs
+
+        if len(args) >= necessaryArgcount and len(args) <= allParameters:
+            COMMANDS[command](state, *args)
+
 
 def show(state : dict, arg : str):
     if arg == "board":
