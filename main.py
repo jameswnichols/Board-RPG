@@ -451,7 +451,7 @@ def getMapTile(mapData, objectData, position):
 def show_board(state):
     mapData = state["mapData"]
     objectData = state["objectData"]
-    board = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT))
+    board = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT-1))
     halfWidth, halfHeight = SCREEN_WIDTH//2, SCREEN_HEIGHT//2
     playerX, playerY = state["playerData"]["position"]
     playerDirection = state["playerData"]["direction"]
@@ -467,7 +467,7 @@ def show_board(state):
 
             writeTextToScreen(board, character, (boardX, boardY))
     
-    renderScreenToConsole(board)
+    renderScreenToConsole(board,(0, 1))
 
 def renderMap(state):
     mapData = state["mapData"]
@@ -530,9 +530,9 @@ def parseCommand(command : str):
             COMMANDS[command](state, *args)
 
 def show(state : dict, arg : str):
-    if arg == "board":
+    if arg in ["board","map"]:
         state["renderView"] = "showBoard"
-    if arg == "inv":
+    if arg in ["inv","inventory"]:
         state["renderView"] = "inventory"
 
 def shiftIndex(l : list, index : int, shift : int):
