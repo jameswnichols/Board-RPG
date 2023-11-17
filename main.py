@@ -317,7 +317,7 @@ def generateVillages(map, objectData, possiblePositions : list):
         for houseLoc in random.sample(houseLocations, houseSamples):
             objectData[houseLoc] = {"objectType":"intTile","display":"⌂"}
 
-def getSpawnLocations(map, pointDict : dict):
+def getSpawnLocations(map, objectData, pointDict : dict):
 
     spawnLists = {}
 
@@ -328,7 +328,7 @@ def getSpawnLocations(map, pointDict : dict):
             spawnLists[val] = []
 
     for pos, spawn in pointDict.items():
-        if (not isinstance(spawn, set)) and map[pos] in baseTiles:
+        if (not isinstance(spawn, set)) and map[pos] in baseTiles and pos not in objectData:
             spawnLists[spawn].append(pos)
     
     return spawnLists
@@ -391,7 +391,7 @@ def generateMap(state):
 
     generateVillages(map, objectData, villagePositions)
 
-    spawnLists = getSpawnLocations(map, spawningPoints)
+    spawnLists = getSpawnLocations(map, objectData, spawningPoints)
 
     generateObjects(objectData, spawnLists["grass"],TREE_AMOUNT, "♣")
 
@@ -602,9 +602,10 @@ def movePlayer(state : dict, arg : str = "f", steps : int = 1):
 
             if validPlayerPosition(state, newPosition):
                 state["playerData"]["position"] = newPosition
-                clearConsole()
-                show_board(state)
+                #Might delete
                 if shifted < steps:
+                    clearConsole()
+                    show_board(state)
                     time.sleep(0.1)
             else:
                 wasLastMoveValid = False
