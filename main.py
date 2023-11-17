@@ -495,6 +495,12 @@ def renderView(state):
         pass
     state["renderView"] = None
 
+def playerHasItem(state : dict, itemName : str):
+    return itemName in state["playerData"]["inventory"]
+
+def getAmountOfItem(state : dict, itemName : str):
+    return 0 if not playerHasItem(state, itemName) else state["playerData"]["inventory"][itemName]
+
 def parseCommand(command : str):
     splitCommand = command.strip().lower().split()
 
@@ -561,12 +567,20 @@ def movePlayer(state : dict, arg : str, steps : int = 1):
         newDirectionX, newDirectionY = directions[shiftedIndex]
         newPosition = (playerX+newDirectionX,playerY+newDirectionY)
         terrainType = state["islandMaskData"][newPosition]
-        print(terrainType)
-        state["playerData"]["position"] = newPosition
+
+        canTraverse = True
+
+        if terrainType in TERRAIN_REQUIRED_ITEM and not playerHasItem(state, TERRAIN_REQUIRED_ITEM[terrainType]):
+            canTraverse = False
+
+        if canTraverse:
+            state["playerData"]["position"] = newPosition
+        
 
 COMMANDS = {
     "show" : show,
     "dir" : changePlayerDirection,
+    "face" : changePlayerDirection,
     "move" : movePlayer
 }
 
