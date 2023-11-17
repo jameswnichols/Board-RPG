@@ -526,13 +526,10 @@ def movePlayer(state : dict, arg : str):
     directions = list(VALID_DIRECTIONS_LOOKUP.keys())
     playerDirectionIndex = directions.index(playerDirection)
 
-    if arg in ["f","for","forwards"]:
-        state["playerData"]["position"] = (playerX+playerDirX,playerY+playerDirY)
-        return
-
     validMove = True
     moveShift = 0
-
+    if arg in ["f","for","forwards"]:
+        moveShift = 0
     if arg in ["b","back","backwards"]:
         moveShift = -4
     elif arg in ["l","left"]:
