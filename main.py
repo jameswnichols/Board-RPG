@@ -4,6 +4,7 @@ import random
 import math
 import os
 import inspect
+import ast
 
 #New village generation, pick a single point on the circle then for each subsequent point pick one of the points on that road and expand on it.
 #Each "spawn" has a random length for each of the 4 cardinal directions.
@@ -539,6 +540,18 @@ def changePlayerDirection(state : dict, arg : str):
         state["playerData"]["direction"] = VALID_DIRECTIONS[arg]
         state["renderView"] = "showBoard"
 
+def validPlayerPosition(state : dict, position : tuple):
+    terrainType = state["islandMaskData"][position]
+
+    canTraverse = True
+
+    if terrainType in TERRAIN_REQUIRED_ITEM and not playerHasItem(state, TERRAIN_REQUIRED_ITEM[terrainType]):
+        canTraverse = False
+    if position in state["objectData"]:
+        canTraverse = False
+
+    return canTraverse
+
 def movePlayer(state : dict, arg : str, steps : int = 1):
 
     state["renderView"] = "showBoard"
@@ -565,18 +578,16 @@ def movePlayer(state : dict, arg : str, steps : int = 1):
     if validMove:
         shiftedIndex = shiftIndex(directions, playerDirectionIndex, moveShift)
         newDirectionX, newDirectionY = directions[shiftedIndex]
-        newPosition = (playerX+newDirectionX,playerY+newDirectionY)
-        terrainType = state["islandMaskData"][newPosition]
 
-        canTraverse = True
+        newPosition = (playerX, playerY)
 
-        if terrainType in TERRAIN_REQUIRED_ITEM and not playerHasItem(state, TERRAIN_REQUIRED_ITEM[terrainType]):
-            canTraverse = False
-        if newPosition in state["objectData"]:
-            canTraverse = False
+        for i in range(0, steps):
+            newPosition = (newPosition[0]+newDirectionX,newPosition[1]+newDirectionY)
 
-        if canTraverse:
-            state["playerData"]["position"] = newPosition
+            if validPlayerPosition(state, newPosition):
+                state["playerData"]["position"] = newPosition
+            else:
+                break
         
 
 COMMANDS = {
