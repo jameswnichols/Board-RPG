@@ -345,9 +345,25 @@ def sampleWithRemove(possibleItems, amount):
 
     return chosen
 
-def generateObjects(objectData, possibleSpawns, spawnAmount, symbol):
+def padList(list, length, value):
+    amountToAdd = length - len(list)
+
+def getDroppedItems(dropTable):
+    rollCount, chanceData = dropTable["rolls"], dropTable["chanceData"]
+    itemLookup = {i : x[0] for i, x in enumerate(chanceData)}
+    itemPool = []
+    for i, itemData in enumerate(chanceData):
+        [itemPool.append(i) for x in range(0, itemData[1])]
+    items = []
+
+
+    #Formatted as {rolls: 2, chanceData: [[ITEM, CHANCE]]}
+    pass
+
+def generateObjects(objectData, possibleSpawns, spawnAmount, symbol, dropTable):
     chosenSpawns = sampleWithRemove(possibleSpawns,spawnAmount)
     for spawn in chosenSpawns:
+        itemsChosen = getDroppedItems(dropTable)
         objectData[spawn] = {"objectType":"intTile","display":symbol}
 
 def generateMap(state):
