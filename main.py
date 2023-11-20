@@ -430,8 +430,10 @@ def generateMap(state):
 
     spawnLists = getSpawnLocations(map, objectData, spawningPoints)
 
+    #Generate Interactable Tiles
     woodDropTable = generateDropTable(1, [("Wood", 1), 100], [("Wood", 1), 50], [("Wood", 1), 25])
-    rockDropTable = generateDropTable(1, [("Stone", 1), 100], [("Stone", 1), 50], [("Stone", 1), 25], [("Gem", 1), 10], [("Gem", 1), 5], [("Gem", 1), 2])
+    rockDropTable = generateDropTable(1, [("Stone", 1), 100], [("Stone", 1), 50], [("Stone", 1), 25], [("Gem", 1), 10], [("Gem", 1), 5], [("Gem", 1), 5])
+    moutainRockDropTable = generateDropTable(1, [("Stone", 1), 100], [("Stone", 1), 50], [("Stone", 1), 25], [("Gem", 1), 20], [("Gem", 1), 10], [("Gem", 1), 10])
 
     generateObjects(objectData, spawnLists["grass"],TREE_AMOUNT, "♣", woodDropTable)
 
@@ -439,7 +441,7 @@ def generateMap(state):
 
     generateObjects(objectData, spawnLists["innerHills"], HILL_ROCK_AMOUNT, "☁", rockDropTable)
 
-    generateObjects(objectData, spawnLists["mountains"], MOUNTAIN_ROCK_AMOUNT, "☁", rockDropTable)
+    generateObjects(objectData, spawnLists["mountains"], MOUNTAIN_ROCK_AMOUNT, "☁", moutainRockDropTable)
 
     playerSpawn = sampleWithRemove(spawnLists["beach"], 1)[0]
 
@@ -658,7 +660,7 @@ COMMANDS = {
 }
 
 def generateState():
-    state = {"renderView":None,"playerData":{"position":(0, 0),"direction":(0, 1),"inventory":{}},"mapData":{},"objectData":{},"islandMaskData":{}}
+    state = {"renderView":None,"playerData":{"health":1,"maximumHealth":100,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Pickaxe"},"mapData":{},"objectData":{},"islandMaskData":{}}
 
     generateMap(state)
 
