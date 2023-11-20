@@ -384,7 +384,6 @@ def generateObjects(objectData, possibleSpawns, spawnAmount, symbol, dropTable):
     chosenSpawns = sampleWithRemove(possibleSpawns,spawnAmount)
     for spawn in chosenSpawns:
         itemsChosen = getDroppedItems(dropTable)
-        print(f"Tile : {symbol} Drops : {itemsChosen}")
         objectData[spawn] = {"objectType":"intTile","display":symbol,"drops":itemsChosen}
 
 def generateMap(state):
@@ -685,7 +684,6 @@ def generateState():
     return state
 
 if __name__ == "__main__":
-
     state = generateState()
 
     renderMap(state)
