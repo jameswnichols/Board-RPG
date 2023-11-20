@@ -70,6 +70,10 @@ TERRAIN_REQUIRED_ITEM = {
     "mountains":"Ice Picks"
 }
 
+ITEM_DATA = {
+    ""
+}
+
 TREE_AMOUNT = 1500
 
 HILL_TREE_AMOUNT = 500
@@ -315,7 +319,7 @@ def generateVillages(map, objectData, possiblePositions : list):
         houseSamples = random.randint(MIN_HOUSES, int(len(houseLocations) * MAX_HOUSES_PERCENTAGE))
 
         for houseLoc in random.sample(houseLocations, houseSamples):
-            objectData[houseLoc] = {"objectType":"intTile","display":"⌂"}
+            objectData[houseLoc] = {"objectType":"blocking","display":"⌂"}
 
 def getSpawnLocations(map, objectData, pointDict : dict):
 
@@ -526,6 +530,12 @@ def show_board(state):
     
     renderScreenToConsole(board)
 
+def showInventory(state):
+    playerInventory = state["playerData"]
+    page = state["page"]
+    
+    
+
 def renderMap(state):
     mapData = state["mapData"]
     objectData = state["objectData"]
@@ -551,7 +561,7 @@ def renderView(state):
     if view == "showBoard":
         show_board(state)
     if view == "inventory":
-        pass
+        showInventory(state)
     state["renderView"] = None
 
 def playerHasItem(state : dict, itemName : str):
@@ -586,11 +596,12 @@ def parseCommand(command : str):
         if len(args) >= necessaryArgcount and len(args) <= allParameters:
             COMMANDS[command](state, *args)
 
-def show(state : dict, arg : str):
+def show(state : dict, arg : str, page : int = 0):
     if arg in ["board","map"]:
         state["renderView"] = "showBoard"
     if arg in ["inv","inventory"]:
         state["renderView"] = "inventory"
+        state["page"] = page
 
 def shiftIndex(l : list, index : int, shift : int):
     direction = -1 if shift < 0 else 1
@@ -675,7 +686,7 @@ COMMANDS = {
 }
 
 def generateState():
-    state = {"renderView":None,"playerData":{"health":51,"maximumHealth":100,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Pickaxe"},"mapData":{},"objectData":{},"islandMaskData":{}}
+    state = {"renderView":None,"page":1,"playerData":{"health":51,"maximumHealth":100,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Pickaxe"},"mapData":{},"objectData":{},"islandMaskData":{}}
 
     generateMap(state)
 
