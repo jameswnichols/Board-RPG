@@ -346,7 +346,7 @@ def sampleWithRemove(possibleItems, amount):
     return chosen
 
 def padList(l, length, value):
-    amountToAdd = length - len(list)
+    amountToAdd = length - len(l)
     if amountToAdd <= 0:
         return l
 
@@ -377,7 +377,7 @@ def getDroppedItems(dropTable):
 def generateDropTable(rolls : int, *itemDrops : list):
     dropDict = {"rolls":rolls,"chanceData":[]}
     for drop in itemDrops:
-        dropDict.append(drop)
+        dropDict["chanceData"].append(drop)
     return dropDict
 
 def generateObjects(objectData, possibleSpawns, spawnAmount, symbol, dropTable):
@@ -431,7 +431,7 @@ def generateMap(state):
     spawnLists = getSpawnLocations(map, objectData, spawningPoints)
 
     woodDropTable = generateDropTable(1, [("Wood", 1), 100], [("Wood", 1), 50], [("Wood", 1), 25])
-    rockDropTable = generateDropTable(1, [("Stone", 1), 100], [("Stone", 1), 50], [("Stone", 1), 25], [("Gem", 1), 5])
+    rockDropTable = generateDropTable(1, [("Stone", 1), 100], [("Stone", 1), 50], [("Stone", 1), 25], [("Gem", 1), 10], [("Gem", 1), 5], [("Gem", 1), 2])
 
     generateObjects(objectData, spawnLists["grass"],TREE_AMOUNT, "♣", woodDropTable)
 
