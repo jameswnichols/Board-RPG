@@ -490,9 +490,23 @@ def getMapTile(mapData, objectData, position):
         return mapData[position]
     return " "
 
+def generatePlayerHealthBar(playerData):
+    playerHealth, maxHealth = playerData["health"], playerData["maximumHealth"]
+    playerHealth = math.floor(playerHealth / 10)
+    maxHealth = math.ceil(maxHealth / 10)
+    #emptyHearts = totalHearts - filledHearts
+    heartString = ""
+    for i in range(0, maxHealth):
+        if i < playerHealth:
+            heartString += "♥"
+        else:
+            heartString += "♡"
+    return heartString
+
 def show_board(state):
     mapData = state["mapData"]
     objectData = state["objectData"]
+    playerData = state["playerData"]
     board = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT))
     halfWidth, halfHeight = SCREEN_WIDTH//2, SCREEN_HEIGHT//2
     playerX, playerY = state["playerData"]["position"]
@@ -508,6 +522,8 @@ def show_board(state):
                 character = PLAYER_DIRECTIONS[playerDirection]
 
             writeTextToScreen(board, character, (boardX, boardY))
+    
+    writeTextToScreen(board, generatePlayerHealthBar(playerData),(0, 0))
     
     renderScreenToConsole(board)
 
@@ -660,7 +676,7 @@ COMMANDS = {
 }
 
 def generateState():
-    state = {"renderView":None,"playerData":{"health":1,"maximumHealth":100,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Pickaxe"},"mapData":{},"objectData":{},"islandMaskData":{}}
+    state = {"renderView":None,"playerData":{"health":51,"maximumHealth":100,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Pickaxe"},"mapData":{},"objectData":{},"islandMaskData":{}}
 
     generateMap(state)
 
