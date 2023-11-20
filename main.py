@@ -345,26 +345,47 @@ def sampleWithRemove(possibleItems, amount):
 
     return chosen
 
-def padList(list, length, value):
+def padList(l, length, value):
     amountToAdd = length - len(list)
+    if amountToAdd <= 0:
+        return l
+
+    for i in range(0, amountToAdd):
+        l.append(value)
 
 def getDroppedItems(dropTable):
     rollCount, chanceData = dropTable["rolls"], dropTable["chanceData"]
-    itemLookup = {i : x[0] for i, x in enumerate(chanceData)}
-    itemPool = []
-    for i, itemData in enumerate(chanceData):
-        [itemPool.append(i) for x in range(0, itemData[1])]
-    items = []
+    itemsDropped = {}
+    for i, itemDrop in enumerate(chanceData):
+        (item, count), chance = itemDrop
+        itemPool = ["DROP" for x in range(0, chance)]
+        padList(itemPool, 100, "NODROP")
+        droppedItem = False
+        for r in range(rollCount):
+            if random.choice(itemPool) == "DROP":
+                droppedItem = True
+        
+        if droppedItem:
+            if item in itemsDropped:
+                itemsDropped[item] += count
+            else:
+                itemsDropped[item] = count
+    
+    return itemsDropped
+    #Formatted as {rolls: ROLLS, chanceData: [[(ITEM, COUNT), CHANCE]]}
 
-
-    #Formatted as {rolls: 2, chanceData: [[ITEM, CHANCE]]}
-    pass
+def generateDropTable(rolls : int, *itemDrops : list):
+    dropDict = {"rolls":rolls,"chanceData":[]}
+    for drop in itemDrops:
+        dropDict.append(drop)
+    return dropDict
 
 def generateObjects(objectData, possibleSpawns, spawnAmount, symbol, dropTable):
     chosenSpawns = sampleWithRemove(possibleSpawns,spawnAmount)
     for spawn in chosenSpawns:
         itemsChosen = getDroppedItems(dropTable)
-        objectData[spawn] = {"objectType":"intTile","display":symbol}
+        print(f"Tile : {symbol} Drops : {itemsChosen}")
+        objectData[spawn] = {"objectType":"intTile","display":symbol,"drops":itemsChosen}
 
 def generateMap(state):
     map = setupMapDictionary(" ")
@@ -409,13 +430,16 @@ def generateMap(state):
 
     spawnLists = getSpawnLocations(map, objectData, spawningPoints)
 
-    generateObjects(objectData, spawnLists["grass"],TREE_AMOUNT, "♣")
+    woodDropTable = generateDropTable(1, [("Wood", 1), 100], [("Wood", 1), 50], [("Wood", 1), 25])
+    rockDropTable = generateDropTable(1, [("Stone", 1), 100], [("Stone", 1), 50], [("Stone", 1), 25], [("Gem", 1), 5])
 
-    generateObjects(objectData, spawnLists["hills"],HILL_TREE_AMOUNT,"↟")
+    generateObjects(objectData, spawnLists["grass"],TREE_AMOUNT, "♣", woodDropTable)
 
-    generateObjects(objectData, spawnLists["innerHills"], HILL_ROCK_AMOUNT, "☁")
+    generateObjects(objectData, spawnLists["hills"],HILL_TREE_AMOUNT,"↟", woodDropTable)
 
-    generateObjects(objectData, spawnLists["mountains"], MOUNTAIN_ROCK_AMOUNT, "☁")
+    generateObjects(objectData, spawnLists["innerHills"], HILL_ROCK_AMOUNT, "☁", rockDropTable)
+
+    generateObjects(objectData, spawnLists["mountains"], MOUNTAIN_ROCK_AMOUNT, "☁", rockDropTable)
 
     playerSpawn = sampleWithRemove(spawnLists["beach"], 1)[0]
 
