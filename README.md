@@ -5,6 +5,9 @@ Features:
 - Has an island map which changes each time you play.
 - ???
 
+Commands (Optional arguments are in *italics*):
+- `show` `board` | `inv`/`inventory` *page*
+
 Restrictions:
 - Only allowed to have one `main` file.
 - Not allowed to use `continue`, `break`, `class`, `global` or `pass`.
