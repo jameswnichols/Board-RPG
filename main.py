@@ -627,7 +627,7 @@ def show(state : dict, arg : str, page : int = 1):
         state["renderView"] = "showBoard"
     if arg in ["inv","inventory"]:
         state["renderView"] = "inventory"
-        state["page"] = page if page > 1 else 1
+        state["page"] = page if isinstance(page, int) and page > 1 else 1
 
 def shiftIndex(l : list, index : int, shift : int):
     direction = -1 if shift < 0 else 1
@@ -673,6 +673,10 @@ def movePlayer(state : dict, arg : str = "f", steps : int = 1):
         moveShift = 2
     else:
         validMove = False
+
+    if (not isinstance(steps, int)) or steps <= 0:
+        validMove = False
+
     if validMove:
         shiftedIndex = shiftIndex(directions, playerDirectionIndex, moveShift)
         newDirectionX, newDirectionY = directions[shiftedIndex]
