@@ -561,7 +561,7 @@ def showInventory(state : dict):
     for i in range(startIndex, min(nextNextIndex,len(invKeys))):
         itemName, count = invKeys[i], playerInventory[invKeys[i]]
         equippedText = " - Equipped" if itemName == selectedItem else ""
-        writeTextToScreen(inventory, f"{i}: {itemName} x {count}{equippedText}", (0, 1 + 3 * (i-startIndex)))
+        writeTextToScreen(inventory, f"{i+1}: {itemName} x {count}{equippedText}", (0, 1 + 3 * (i-startIndex)))
 
         itemDescription = getItemDescription(state, itemName)
 
@@ -698,15 +698,32 @@ def movePlayer(state : dict, arg : str = "f", steps : int = 1):
             else:
                 wasLastMoveValid = False
 
-def generateItem(itemData, itemName : str, itemDamage : str, nullifyChance : int, randomRolls : int, description : str):
-    itemData[itemName] = {"itemDamage":itemDamage,"nullifyChance":nullifyChance,"randomRolls":randomRolls,"description":description}
+def equipItem(state : dict, arg):
+    isItemName = isinstance(arg, str)
+    playerInvKeys = list(state["playerData"]["inventory"].keys())
+
+    if isItemName:
+        if playerHasItem(state, arg):
+            state["playerData"]["selectedItem"] = arg
+            state["renderView"] = "inventory"
+    elif isinstance(arg, int):
+        index = arg - 1
+        if 0 <= index < len(playerInvKeys):
+            state["playerData"]["selectedItem"] = playerInvKeys[index]
+            state["renderView"] = "inventory"
+        
 
 COMMANDS = {
     "show" : show,
     "dir" : changePlayerDirection,
     "face" : changePlayerDirection,
-    "move" : movePlayer
+    "move" : movePlayer,
+    "equip" : equipItem,
+    "select" : equipItem,
 }
+
+def generateItem(itemData, itemName : str, itemDamage : str, nullifyChance : int, randomRolls : int, description : str):
+    itemData[itemName] = {"itemDamage":itemDamage,"nullifyChance":nullifyChance,"randomRolls":randomRolls,"description":description}
 
 def generateItemData(itemData : dict):
     generateItem(itemData, "Axe", 5, 0, 1,"Can cut trees and does 0.5 x ♥.")
