@@ -12,9 +12,9 @@ Commands (Optional args start with `+`'s and possible args are separated with |'
 - `equip / select` > `slot[1 -> ...]`
 
 Restrictions:
-- Only allowed to have one `main` file.
+- Only allowed to have one `main.py` file.
 - Not allowed to use `continue`, `break`, `class`, `global` or `pass`.
-- Not allowed `while` loops that don't have a terminating condition.
+- Not allowed `while` loops that don't have terminating conditions.
 - Can only make functions that modify the `state` variable, can't modify it outside of them.
 - Must contain a `main()` function.
 - Must contain a `show_board()` function that **doesn't** change `state`.
