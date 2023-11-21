@@ -539,6 +539,13 @@ def getItemDescription(state : dict, itemName : str):
         pass
     return itemDescription
 
+def findItemPage(state : dict, itemName):
+    playerInventory = state["playerData"]["inventory"]
+    itemIndex = list(playerInventory.keys()).index(itemName)+1
+    itemsPerPage = ((SCREEN_HEIGHT-1)//3)
+    return math.ceil(itemIndex/itemsPerPage)
+
+
 def showInventory(state : dict):
     playerInventory = state["playerData"]["inventory"]
     selectedItem = state["playerData"]["selectedItem"]
@@ -704,8 +711,10 @@ def equipItem(state : dict, arg):
     if isinstance(arg, int):
         index = arg - 1
         if 0 <= index < len(playerInvKeys):
-            state["playerData"]["selectedItem"] = playerInvKeys[index]
+            itemName = playerInvKeys[index]
+            state["playerData"]["selectedItem"] = itemName
             state["renderView"] = "inventory"
+            state["page"] = findItemPage(state, itemName)
         
 
 COMMANDS = {
