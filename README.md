@@ -5,8 +5,8 @@ Features:
 - Has an island map which changes each time you play.
 - ???
 
-Commands (Optional arguments are in *italics*):
-- `show` `board` | `inv`/`inventory` *page*
+Commands (Optional arguments start with `+`'s):
+- `show` > `board` | `inv` / `inventory`, `+page`
 
 Restrictions:
 - Only allowed to have one `main` file.
