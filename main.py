@@ -70,9 +70,7 @@ TERRAIN_REQUIRED_ITEM = {
     "mountains":"Ice Picks"
 }
 
-ITEM_DATA = {
-    ""
-}
+itemData = {}
 
 TREE_AMOUNT = 1500
 
@@ -678,12 +676,24 @@ def movePlayer(state : dict, arg : str = "f", steps : int = 1):
             else:
                 wasLastMoveValid = False
 
+def generateItem(itemData, itemName : str, itemDamage : str, nullifyChance : float):
+    itemData[itemName] = {"itemDamage":itemDamage,"nullifyChance":nullifyChance}
+
 COMMANDS = {
     "show" : show,
     "dir" : changePlayerDirection,
     "face" : changePlayerDirection,
     "move" : movePlayer
 }
+
+def generateItemData(itemData : dict):
+    generateItem(itemData, "Pickaxe", 5, 0)
+    generateItem(itemData, "Axe", 5, 0)
+    generateItem(itemData, "Wood", 0, 0)
+    generateItem(itemData, "Stone", 0, 0)
+    generateItem(itemData, "Gem", 0, 0)
+    generateItem(itemData, "Skill Fragment", 0, 0)
+    generateItem(itemData, "Health Up Orb", 0, 0)
 
 def generateState():
     state = {"renderView":None,"page":1,"playerData":{"health":51,"maximumHealth":100,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Pickaxe"},"mapData":{},"objectData":{},"islandMaskData":{}}
