@@ -533,8 +533,6 @@ def showInventory(state):
     playerInventory = state["playerData"]
     page = state["page"]
     
-    
-
 def renderMap(state):
     mapData = state["mapData"]
     objectData = state["objectData"]
@@ -677,8 +675,8 @@ def movePlayer(state : dict, arg : str = "f", steps : int = 1):
             else:
                 wasLastMoveValid = False
 
-def generateItem(itemData, itemName : str, itemDamage : str, nullifyChance : int):
-    itemData[itemName] = {"itemDamage":itemDamage,"nullifyChance":nullifyChance}
+def generateItem(itemData, itemName : str, itemDamage : str, nullifyChance : int, randomRolls : int):
+    itemData[itemName] = {"itemDamage":itemDamage,"nullifyChance":nullifyChance,"randomRolls":randomRolls}
 
 COMMANDS = {
     "show" : show,
@@ -688,25 +686,26 @@ COMMANDS = {
 }
 
 def generateItemData(itemData : dict):
-    generateItem(itemData, "Pickaxe", 5, 0)
-    generateItem(itemData, "Axe", 5, 0)
-    generateItem(itemData, "Wood", 0, 0)
-    generateItem(itemData, "Stone", 0, 0)
-    generateItem(itemData, "Gem", 0, 0)
-    generateItem(itemData, "Skill Fragment", 0, 0)
-    generateItem(itemData, "Health Up Orb", 0, 0)
-    generateItem(itemData, "Attack Up Orb", 0, 0)
-    generateItem(itemData, "Goblin Club", 10, 0)
-    generateItem(itemData, "Soldier's Sword", 15, 0)
-    generateItem(itemData, "Knight's Sword", 20, 0)
-    generateItem(itemData, "Ogre Club", 20, 5)
-    generateItem(itemData, "King's Sword", 1000, 0)
-    generateItem(itemData, "Goblin Shield", 0, 5)
-    generateItem(itemData, "Soldier's Shield", 0, 10)
-    generateItem(itemData, "Knight's Shield", 0, 20)
-    generateItem(itemData, "King's Shield", 0, 100)
-    generateItem(itemData, "Snow Boots", 0, 0)
-    generateItem(itemData, "Ice Picks", 0, 0)
+    generateItem(itemData, "Axe", 5, 0, 1)
+    generateItem(itemData, "Wood", 0, 0, 1)
+    generateItem(itemData, "Stone", 0, 0, 1)
+    generateItem(itemData, "Gem", 0, 0, 1)
+    generateItem(itemData, "Skill Fragment", 0, 0, 1)
+    generateItem(itemData, "Health Up Orb", 0, 0, 1)
+    generateItem(itemData, "Attack Up Orb", 0, 0, 1)
+    generateItem(itemData, "Pickaxe", 5, 0, 1)
+    generateItem(itemData, "Miner's Pickaxe", 5, 0, 2)
+    generateItem(itemData, "Goblin Club", 10, 0, 1)
+    generateItem(itemData, "Soldier's Sword", 15, 0, 1)
+    generateItem(itemData, "Knight's Sword", 20, 0, 2)
+    generateItem(itemData, "Ogre Club", 20, 5, 1)
+    generateItem(itemData, "King's Sword", 1000, 0, 5)
+    generateItem(itemData, "Goblin Shield", 0, 5, 1)
+    generateItem(itemData, "Soldier's Shield", 0, 10, 1)
+    generateItem(itemData, "Knight's Shield", 0, 20, 1)
+    generateItem(itemData, "King's Shield", 0, 100, 1)
+    generateItem(itemData, "Snow Boots", 0, 0, 1)
+    generateItem(itemData, "Ice Picks", 0, 0, 1)
 
 def generateState():
     state = {"renderView":None,"page":1,"playerData":{"health":100,"maximumHealth":100,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Pickaxe"},"mapData":{},"objectData":{},"islandMaskData":{},"itemData":{}}
