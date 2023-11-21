@@ -529,6 +529,16 @@ def show_board(state):
     
     renderScreenToConsole(board)
 
+def getItemDescription(state : dict, itemName : str):
+    itemDescription = "No description."
+    try:
+        desc = state["itemData"][itemName]["description"]
+        if desc != "":
+            return desc
+    except:
+        pass
+    return itemDescription
+
 def showInventory(state : dict):
     playerInventory = state["playerData"]["inventory"]
     page = state["page"]
@@ -548,10 +558,12 @@ def showInventory(state : dict):
     for i in range(startIndex, len(invKeys)):
         itemName, count = invKeys[i], playerInventory[invKeys[i]]
         writeTextToScreen(inventory, f"{itemName} x {count}", (0, 1 + 2 * (i-startIndex)))
-        writeTextToScreen(inventory,"↳ ITEM DESCRIPTION",(1, 2 + 2 * (i-startIndex)))
+
+        itemDescription = getItemDescription(state, itemName)
+
+        writeTextToScreen(inventory,f"↳ {itemDescription}",(1, 2 + 2 * (i-startIndex)))
 
     renderScreenToConsole(inventory)
-
     
 def renderMap(state):
     mapData = state["mapData"]
