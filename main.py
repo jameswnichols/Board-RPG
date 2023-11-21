@@ -540,12 +540,9 @@ def renderMap(state):
     for y in range(MAP_HEIGHT):
         mapLine = []
         for x in range(MAP_WIDTH):
-
             mapTile = mapData[(x, y)]
-            
             if (x, y) in objectData:
                 mapTile = objectData[(x, y)]["display"]
-            
             mapLine.append(mapTile)
         mapLines.append(" ".join(mapLine)+"\n")
     with open("map.txt","w") as f:
@@ -579,10 +576,8 @@ def convertArgs(argList : list):
 
 def parseCommand(command : str):
     splitCommand = command.strip().lower().split()
-
     command = splitCommand[0]
     args = convertArgs(splitCommand[1:])
-
     if command in COMMANDS:
         functionSignature = inspect.signature(COMMANDS[command])
         #-1 on allParameters and co_argcount because state is always supplied
@@ -617,11 +612,8 @@ def changePlayerDirection(state : dict, arg : str):
         state["renderView"] = "showBoard"
 
 def validPlayerPosition(state : dict, position : tuple):
-
     terrainType = state["islandMaskData"][position]
-
     canTraverse = True
-
     if terrainType in TERRAIN_REQUIRED_ITEM and not playerHasItem(state, TERRAIN_REQUIRED_ITEM[terrainType]):
         canTraverse = False
     if position in state["objectData"]:
@@ -630,15 +622,11 @@ def validPlayerPosition(state : dict, position : tuple):
     return canTraverse
 
 def movePlayer(state : dict, arg : str = "f", steps : int = 1):
-
     state["renderView"] = "showBoard"
-
     playerX, playerY = state["playerData"]["position"]
     playerDirection = state["playerData"]["direction"]
-
     directions = list(VALID_DIRECTIONS_LOOKUP.keys())
     playerDirectionIndex = directions.index(playerDirection)
-
     validMove = True
     moveShift = 0
     if arg in ["f","for","forwards"]:
@@ -651,20 +639,15 @@ def movePlayer(state : dict, arg : str = "f", steps : int = 1):
         moveShift = 2
     else:
         validMove = False
-    
     if validMove:
         shiftedIndex = shiftIndex(directions, playerDirectionIndex, moveShift)
         newDirectionX, newDirectionY = directions[shiftedIndex]
-
         newPosition = (playerX, playerY)
-
         wasLastMoveValid = True
         shifted = 0
-
         while shifted < steps and wasLastMoveValid:
             shifted += 1
             newPosition = (newPosition[0]+newDirectionX,newPosition[1]+newDirectionY)
-
             if validPlayerPosition(state, newPosition):
                 state["playerData"]["position"] = newPosition
                 #Might delete
