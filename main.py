@@ -542,7 +542,7 @@ def getItemDescription(state : dict, itemName : str):
 def showInventory(state : dict):
     playerInventory = state["playerData"]["inventory"]
     page = state["page"]
-    itemsPerPage = (SCREEN_HEIGHT//3) #Space for top bar
+    itemsPerPage = ((SCREEN_HEIGHT-1)//3) #Space for top bar
     totalPages = math.ceil(len(playerInventory)/itemsPerPage)
     if page > totalPages:
         page = totalPages
@@ -555,7 +555,9 @@ def showInventory(state : dict):
 
     startIndex = itemsPerPage * (page-1)
 
-    for i in range(startIndex, len(invKeys)):
+    nextNextIndex = itemsPerPage * (page)
+
+    for i in range(startIndex, min(nextNextIndex,len(invKeys))):
         itemName, count = invKeys[i], playerInventory[invKeys[i]]
         writeTextToScreen(inventory, f"{itemName} x {count}", (0, 1 + 3 * (i-startIndex)))
 
@@ -719,8 +721,8 @@ def generateItemData(itemData : dict):
     generateItem(itemData, "Soldier's Shield", 0, 10, 1,"Has a 10% chance to block.")
     generateItem(itemData, "Knight's Shield", 0, 20, 1,"Has a 20% chance to block.")
     generateItem(itemData, "King's Shield", 0, 100, 1,"Blocks all attacks.")
-    generateItem(itemData, "Snow Boots", 0, 0, 1,"Can traverse hill tiles.")
-    generateItem(itemData, "Ice Picks", 0, 0, 1,"Can climb mountain tiles.")
+    generateItem(itemData, "Snow Boots", 0, 0, 1,"Needed to traverse hill tiles.")
+    generateItem(itemData, "Ice Picks", 0, 0, 1,"Needed to climb mountain tiles.")
 
 def generateState():
     state = {"renderView":None,"page":1,"playerData":{"health":100,"maximumHealth":100,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Pickaxe"},"mapData":{},"objectData":{},"islandMaskData":{},"itemData":{}}
