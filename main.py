@@ -611,8 +611,8 @@ def convertArgs(argList : list):
     return convertedList
 
 def parseCommand(command : str):
-    splitCommand = command.strip().lower().split()
-    command = splitCommand[0]
+    splitCommand = command.strip().split()
+    command = splitCommand[0].lower()
     args = convertArgs(splitCommand[1:])
     if command in COMMANDS:
         functionSignature = inspect.signature(COMMANDS[command])
@@ -665,6 +665,7 @@ def movePlayer(state : dict, arg : str = "f", steps : int = 1):
     playerDirectionIndex = directions.index(playerDirection)
     validMove = True
     moveShift = 0
+    arg = arg.lower()
     if arg in ["f","for","forwards"]:
         moveShift = 0
     elif arg in ["b","back","backwards"]:
@@ -699,14 +700,8 @@ def movePlayer(state : dict, arg : str = "f", steps : int = 1):
                 wasLastMoveValid = False
 
 def equipItem(state : dict, arg):
-    isItemName = isinstance(arg, str)
     playerInvKeys = list(state["playerData"]["inventory"].keys())
-
-    if isItemName:
-        if playerHasItem(state, arg):
-            state["playerData"]["selectedItem"] = arg
-            state["renderView"] = "inventory"
-    elif isinstance(arg, int):
+    if isinstance(arg, int):
         index = arg - 1
         if 0 <= index < len(playerInvKeys):
             state["playerData"]["selectedItem"] = playerInvKeys[index]
