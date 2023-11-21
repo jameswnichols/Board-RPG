@@ -532,7 +532,7 @@ def show_board(state):
 def showInventory(state : dict):
     playerInventory = state["playerData"]["inventory"]
     page = state["page"]
-    itemsPerPage = (SCREEN_HEIGHT//2 - 1) #Space for top bar
+    itemsPerPage = (SCREEN_HEIGHT//2) #Space for top bar
     totalPages = math.ceil(len(playerInventory)/itemsPerPage)
     if page > totalPages:
         page = totalPages
@@ -543,10 +543,12 @@ def showInventory(state : dict):
 
     invKeys = list(playerInventory.keys())
 
-    for i in range(itemsPerPage * (page-1), len(invKeys)):
+    startIndex = itemsPerPage * (page-1)
+
+    for i in range(startIndex, len(invKeys)):
         itemName, count = invKeys[i], playerInventory[invKeys[i]]
-        writeTextToScreen(inventory, f"{itemName} x {count}", (0, 1 + 2 * i))
-        writeTextToScreen(inventory,"↳ ITEM DESCRIPTION",(1, 2 + 2 * i))
+        writeTextToScreen(inventory, f"{itemName} x {count}", (0, 1 + 2 * (i-startIndex)))
+        writeTextToScreen(inventory,"↳ ITEM DESCRIPTION",(1, 2 + 2 * (i-startIndex)))
 
     renderScreenToConsole(inventory)
 
@@ -676,8 +678,8 @@ def movePlayer(state : dict, arg : str = "f", steps : int = 1):
             else:
                 wasLastMoveValid = False
 
-def generateItem(itemData, itemName : str, itemDamage : str, nullifyChance : int, randomRolls : int):
-    itemData[itemName] = {"itemDamage":itemDamage,"nullifyChance":nullifyChance,"randomRolls":randomRolls}
+def generateItem(itemData, itemName : str, itemDamage : str, nullifyChance : int, randomRolls : int, description : str):
+    itemData[itemName] = {"itemDamage":itemDamage,"nullifyChance":nullifyChance,"randomRolls":randomRolls,"description":description}
 
 COMMANDS = {
     "show" : show,
@@ -687,31 +689,34 @@ COMMANDS = {
 }
 
 def generateItemData(itemData : dict):
-    generateItem(itemData, "Axe", 5, 0, 1)
-    generateItem(itemData, "Wood", 0, 0, 1)
-    generateItem(itemData, "Stone", 0, 0, 1)
-    generateItem(itemData, "Gem", 0, 0, 1)
-    generateItem(itemData, "Skill Fragment", 0, 0, 1)
-    generateItem(itemData, "Health Up Orb", 0, 0, 1)
-    generateItem(itemData, "Attack Up Orb", 0, 0, 1)
-    generateItem(itemData, "Pickaxe", 5, 0, 1)
-    generateItem(itemData, "Miner's Pickaxe", 5, 0, 2)
-    generateItem(itemData, "Goblin Club", 10, 0, 1)
-    generateItem(itemData, "Soldier's Sword", 15, 0, 1)
-    generateItem(itemData, "Knight's Sword", 20, 0, 2)
-    generateItem(itemData, "Ogre Club", 20, 5, 1)
-    generateItem(itemData, "King's Sword", 1000, 0, 5)
-    generateItem(itemData, "Goblin Shield", 0, 5, 1)
-    generateItem(itemData, "Soldier's Shield", 0, 10, 1)
-    generateItem(itemData, "Knight's Shield", 0, 20, 1)
-    generateItem(itemData, "King's Shield", 0, 100, 1)
-    generateItem(itemData, "Snow Boots", 0, 0, 1)
-    generateItem(itemData, "Ice Picks", 0, 0, 1)
+    generateItem(itemData, "Axe", 5, 0, 1,"A basic starting Axe.")
+    generateItem(itemData, "Wood", 0, 0, 1, "A Common resource that's useful for trading.")
+    generateItem(itemData, "Stone", 0, 0, 1, "A tough material that's useful for trading.")
+    generateItem(itemData, "Gem", 0, 0, 1, "A rare gem that's valuable to villagers.")
+    generateItem(itemData, "Skill Fragment", 0, 0, 1,"")
+    generateItem(itemData, "Health Up Orb", 0, 0, 1,"")
+    generateItem(itemData, "Attack Up Orb", 0, 0, 1,"")
+    generateItem(itemData, "Pickaxe", 5, 0, 1,"")
+    generateItem(itemData, "Miner's Pickaxe", 5, 0, 2,"")
+    generateItem(itemData, "Goblin Club", 10, 0, 1,"")
+    generateItem(itemData, "Soldier's Sword", 15, 0, 1,"")
+    generateItem(itemData, "Knight's Sword", 20, 0, 2,"")
+    generateItem(itemData, "Ogre Club", 20, 5, 1,"")
+    generateItem(itemData, "King's Sword", 1000, 0, 5,"")
+    generateItem(itemData, "Goblin Shield", 0, 5, 1,"")
+    generateItem(itemData, "Soldier's Shield", 0, 10, 1,"")
+    generateItem(itemData, "Knight's Shield", 0, 20, 1,"")
+    generateItem(itemData, "King's Shield", 0, 100, 1,"")
+    generateItem(itemData, "Snow Boots", 0, 0, 1,"")
+    generateItem(itemData, "Ice Picks", 0, 0, 1,"")
 
 def generateState():
     state = {"renderView":None,"page":1,"playerData":{"health":100,"maximumHealth":100,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Pickaxe"},"mapData":{},"objectData":{},"islandMaskData":{},"itemData":{}}
 
     generateItemData(state["itemData"])
+
+    for i in range(0, 100):
+        state["playerData"]["inventory"][str(i)] = 1
 
     generateMap(state)
 
