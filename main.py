@@ -541,6 +541,7 @@ def getItemDescription(state : dict, itemName : str):
 
 def showInventory(state : dict):
     playerInventory = state["playerData"]["inventory"]
+    selectedItem = state["playerData"]["selectedItem"]
     page = state["page"]
     itemsPerPage = ((SCREEN_HEIGHT-1)//3) #Space for top bar
     totalPages = math.ceil(len(playerInventory)/itemsPerPage)
@@ -559,11 +560,12 @@ def showInventory(state : dict):
 
     for i in range(startIndex, min(nextNextIndex,len(invKeys))):
         itemName, count = invKeys[i], playerInventory[invKeys[i]]
-        writeTextToScreen(inventory, f"{itemName} x {count}", (0, 1 + 3 * (i-startIndex)))
+        equippedText = " - Equipped" if itemName == selectedItem else ""
+        writeTextToScreen(inventory, f"{i}: {itemName} x {count}{equippedText}", (0, 1 + 3 * (i-startIndex)))
 
         itemDescription = getItemDescription(state, itemName)
 
-        writeTextToScreen(inventory,f"↳ {itemDescription}",(1, 2 + 3 * (i-startIndex)))
+        writeTextToScreen(inventory,f"↳ {itemDescription}",(3, 2 + 3 * (i-startIndex)))
 
     renderScreenToConsole(inventory)
     
