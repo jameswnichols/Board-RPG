@@ -5,7 +5,7 @@ Features:
 - Has an island map which changes each time you play.
 - ???
 
-Commands (Optional arguments start with `+`'s):
+Commands (Optional args start with `+`'s and possible args are seperated with |'s):
 - `show` > `board` | `inv / inventory`, `+page[1 -> ...]`
 - `move` > `+f / for / forwards` | `+b / back` | `+l / left` | `+r / right`, `+steps[1 -> ...]`
 - `dir / face` > `n` | `ne` | `e` | `se` | `s` | `sw` | `w` | `nw`
