@@ -676,7 +676,7 @@ def movePlayer(state : dict, arg : str = "f", steps : int = 1):
             else:
                 wasLastMoveValid = False
 
-def generateItem(itemData, itemName : str, itemDamage : str, nullifyChance : float):
+def generateItem(itemData, itemName : str, itemDamage : str, nullifyChance : int):
     itemData[itemName] = {"itemDamage":itemDamage,"nullifyChance":nullifyChance}
 
 COMMANDS = {
@@ -694,9 +694,23 @@ def generateItemData(itemData : dict):
     generateItem(itemData, "Gem", 0, 0)
     generateItem(itemData, "Skill Fragment", 0, 0)
     generateItem(itemData, "Health Up Orb", 0, 0)
+    generateItem(itemData, "Attack Up Orb", 0, 0)
+    generateItem(itemData, "Goblin Club", 10, 0)
+    generateItem(itemData, "Soldier's Sword", 15, 0)
+    generateItem(itemData, "Knight's Sword", 20, 0)
+    generateItem(itemData, "Ogre Club", 20, 5)
+    generateItem(itemData, "King's Sword", 1000, 0)
+    generateItem(itemData, "Goblin Shield", 0, 5)
+    generateItem(itemData, "Soldier's Shield", 0, 10)
+    generateItem(itemData, "Knight's Shield", 0, 20)
+    generateItem(itemData, "King's Shield", 0, 100)
+    generateItem(itemData, "Snow Boots", 0, 0)
+    generateItem(itemData, "Ice Picks", 0, 0)
 
 def generateState():
-    state = {"renderView":None,"page":1,"playerData":{"health":51,"maximumHealth":100,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Pickaxe"},"mapData":{},"objectData":{},"islandMaskData":{}}
+    state = {"renderView":None,"page":1,"playerData":{"health":100,"maximumHealth":100,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Pickaxe"},"mapData":{},"objectData":{},"islandMaskData":{},"itemData":{}}
+
+    generateItemData(state["itemData"])
 
     generateMap(state)
 
