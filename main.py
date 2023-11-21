@@ -509,6 +509,7 @@ def show_board(state):
     mapData = state["mapData"]
     objectData = state["objectData"]
     playerData = state["playerData"]
+    selectedItem = playerData["selectedItem"]
     board = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT))
     halfWidth, halfHeight = SCREEN_WIDTH//2, SCREEN_HEIGHT//2
     playerX, playerY = state["playerData"]["position"]
@@ -526,6 +527,8 @@ def show_board(state):
             writeTextToScreen(board, character, (boardX, boardY))
     
     writeTextToScreen(board, generatePlayerHealthBar(playerData),(0, 0))
+    selectedText = f"Selected: {selectedItem}"
+    writeTextToScreen(board, selectedText, (SCREEN_WIDTH-len(selectedText), 0))
     
     renderScreenToConsole(board)
 
