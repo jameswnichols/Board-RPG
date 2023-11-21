@@ -529,13 +529,26 @@ def show_board(state):
     
     renderScreenToConsole(board)
 
-def showInventory(state):
-    playerInventory = state["playerData"]
+def showInventory(state : dict):
+    playerInventory = state["playerData"]["inventory"]
     page = state["page"]
-    itemsPerPage = SCREEN_HEIGHT - 1 #Space for top bar
+    itemsPerPage = (SCREEN_HEIGHT//2 - 1) #Space for top bar
     totalPages = math.ceil(len(playerInventory)/itemsPerPage)
-
+    if page > totalPages:
+        page = totalPages
     inventory = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT))
+    pageText = f"Page {page}/{totalPages}"
+    writeTextToScreen(inventory,"Inventory:")
+    writeTextToScreen(inventory,pageText,(SCREEN_WIDTH-len(pageText),0))
+
+    invKeys = list(playerInventory.keys())
+
+    for i in range(itemsPerPage * (page-1), len(invKeys)):
+        itemName, count = invKeys[i], playerInventory[invKeys[i]]
+        writeTextToScreen(inventory, f"{itemName} x {count}", (0, 1 + 2 * i))
+        writeTextToScreen(inventory,"↳ ITEM DESCRIPTION",(1, 2 + 2 * i))
+
+    renderScreenToConsole(inventory)
 
     
 def renderMap(state):
@@ -598,7 +611,7 @@ def show(state : dict, arg : str, page : int = 1):
         state["renderView"] = "showBoard"
     if arg in ["inv","inventory"]:
         state["renderView"] = "inventory"
-        state["page"] = page
+        state["page"] = page if page > 1 else 1
 
 def shiftIndex(l : list, index : int, shift : int):
     direction = -1 if shift < 0 else 1
