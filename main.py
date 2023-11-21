@@ -355,28 +355,19 @@ def padList(l, length, value):
     for i in range(0, amountToAdd):
         l.append(value)
 
-# def randomChance(chance, rolls):
-#     chancePool = ["DROP" for x in range(0, chance)]
-#     padList(chancePool, 100, "NODROP")
-#     chanceLanded = False
-#     for r in range(rolls):
-#         if random.choice(chancePool) == "DROP":
-#             chanceLanded = 
+def randomChance(chance, rolls):
+    chanceLanded = False
+    for r in range(rolls):
+        if random.random() <= chance:
+            chanceLanded = True
+    return chanceLanded
 
 def getDroppedItems(dropTable):
     rollCount, chanceData = dropTable["rolls"], dropTable["chanceData"]
     itemsDropped = {}
     for i, itemDrop in enumerate(chanceData):
         (item, count), chance = itemDrop
-        #itemPool = ["DROP" for x in range(0, chance)]
-        #padList(itemPool, 100, "NODROP")
-        droppedItem = False
-        for r in range(rollCount):
-            if random.random() < chance:
-            #if random.choice(itemPool) == "DROP":
-                droppedItem = True
-        
-        if droppedItem:
+        if randomChance(chance, 1):
             if item in itemsDropped:
                 itemsDropped[item] += count
             else:
@@ -444,7 +435,7 @@ def generateMap(state):
     #Generate Interactable Tiles
     woodDropTable = generateDropTable(1, [("Wood", 1), 1], [("Wood", 1), 0.5], [("Wood", 1), 0.25])
     rockDropTable = generateDropTable(1, [("Stone", 1), 1], [("Stone", 1), 0.5], [("Stone", 1), 0.25], [("Gem", 1), 0.1], [("Gem", 1), 0.05])
-    moutainRockDropTable = generateDropTable(1, [("Stone", 1), 1], [("Stone", 1), 0.5], [("Stone", 1), 0.25], [("Gem", 1), 0.2], [("Gem", 1), 0.1], [("Gem", 1), 0.1])
+    moutainRockDropTable = generateDropTable(1, [("Stone", 1), 1], [("Stone", 1), 0.5], [("Stone", 1), 0.25], [("Gem", 1), 0.5], [("Gem", 1), 0.25], [("Gem", 1), 0.125])
 
     generateObjects(objectData, spawnLists["grass"],TREE_AMOUNT, "♣", woodDropTable)
 
