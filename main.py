@@ -542,7 +542,7 @@ def getItemDescription(state : dict, itemName : str):
 def showInventory(state : dict):
     playerInventory = state["playerData"]["inventory"]
     page = state["page"]
-    itemsPerPage = (SCREEN_HEIGHT//2) #Space for top bar
+    itemsPerPage = (SCREEN_HEIGHT//3) #Space for top bar
     totalPages = math.ceil(len(playerInventory)/itemsPerPage)
     if page > totalPages:
         page = totalPages
@@ -557,11 +557,11 @@ def showInventory(state : dict):
 
     for i in range(startIndex, len(invKeys)):
         itemName, count = invKeys[i], playerInventory[invKeys[i]]
-        writeTextToScreen(inventory, f"{itemName} x {count}", (0, 1 + 2 * (i-startIndex)))
+        writeTextToScreen(inventory, f"{itemName} x {count}", (0, 1 + 3 * (i-startIndex)))
 
         itemDescription = getItemDescription(state, itemName)
 
-        writeTextToScreen(inventory,f"↳ {itemDescription}",(1, 2 + 2 * (i-startIndex)))
+        writeTextToScreen(inventory,f"↳ {itemDescription}",(1, 2 + 3 * (i-startIndex)))
 
     renderScreenToConsole(inventory)
     
@@ -701,34 +701,34 @@ COMMANDS = {
 }
 
 def generateItemData(itemData : dict):
-    generateItem(itemData, "Axe", 5, 0, 1,"A basic starting Axe.")
+    generateItem(itemData, "Axe", 5, 0, 1,"A basic starting Axe that does 0.5 x ♥.")
     generateItem(itemData, "Wood", 0, 0, 1, "A Common resource that's useful for trading.")
     generateItem(itemData, "Stone", 0, 0, 1, "A tough material that's useful for trading.")
-    generateItem(itemData, "Gem", 0, 0, 1, "A rare gem that's valuable to villagers.")
-    generateItem(itemData, "Skill Fragment", 0, 0, 1,"")
-    generateItem(itemData, "Health Up Orb", 0, 0, 1,"")
-    generateItem(itemData, "Attack Up Orb", 0, 0, 1,"")
-    generateItem(itemData, "Pickaxe", 5, 0, 1,"")
-    generateItem(itemData, "Miner's Pickaxe", 5, 0, 2,"")
-    generateItem(itemData, "Goblin Club", 10, 0, 1,"")
-    generateItem(itemData, "Soldier's Sword", 15, 0, 1,"")
-    generateItem(itemData, "Knight's Sword", 20, 0, 2,"")
-    generateItem(itemData, "Ogre Club", 20, 5, 1,"")
-    generateItem(itemData, "King's Sword", 1000, 0, 5,"")
-    generateItem(itemData, "Goblin Shield", 0, 5, 1,"")
-    generateItem(itemData, "Soldier's Shield", 0, 10, 1,"")
-    generateItem(itemData, "Knight's Shield", 0, 20, 1,"")
-    generateItem(itemData, "King's Shield", 0, 100, 1,"")
-    generateItem(itemData, "Snow Boots", 0, 0, 1,"")
-    generateItem(itemData, "Ice Picks", 0, 0, 1,"")
+    generateItem(itemData, "Gem", 0, 0, 1, "A rare gem that's valuable to Villagers.")
+    generateItem(itemData, "Skill Fragment", 0, 0, 1,"Collect 10 to convert their energy via trading.")
+    generateItem(itemData, "Health Up Orb", 0, 0, 1,"Increases your maximum health by 1 x ♥.")
+    generateItem(itemData, "Attack Up Orb", 0, 0, 1,"Increases your damage by 1 x ♥.")
+    generateItem(itemData, "Pickaxe", 5, 0, 1,"A basic starting Pickaxe that does 0.5 x ♥.")
+    generateItem(itemData, "Miner's Pickaxe", 5, 0, 2,"A Miner's Pickaxe that doubles drop rates.")
+    generateItem(itemData, "Goblin Club", 10, 0, 1,"A Goblin's Club that does 1 x ♥.")
+    generateItem(itemData, "Soldier's Sword", 15, 0, 1,"A Soldier's Sword that does 1.5 x ♥.")
+    generateItem(itemData, "Knight's Sword", 30, 0, 2,"A Knight's Sword that does 3 x ♥.")
+    generateItem(itemData, "Ogre Club", 20, 5, 1,"An Ogre's Club that does 2 x ♥ and has a 5% chance to block.")
+    generateItem(itemData, "King's Sword", 1000, 0, 5,"A King's Sword that can kill any enemy in one swing.")
+    generateItem(itemData, "Goblin Shield", 0, 5, 1,"A Goblin's Shield that has a 5% chance to block.")
+    generateItem(itemData, "Soldier's Shield", 0, 10, 1,"A Soldier's Shield that has a 10% chance to block.")
+    generateItem(itemData, "Knight's Shield", 0, 20, 1,"A Knight's Shield that has a 20% chance to block.")
+    generateItem(itemData, "King's Shield", 0, 100, 1,"A King's Shield that blocks all attacks.")
+    generateItem(itemData, "Snow Boots", 0, 0, 1,"A pair of Snow Boots required to traverse hill tiles.")
+    generateItem(itemData, "Ice Picks", 0, 0, 1,"A pair of Ice Picks required to climb mountain tiles.")
 
 def generateState():
     state = {"renderView":None,"page":1,"playerData":{"health":100,"maximumHealth":100,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Pickaxe"},"mapData":{},"objectData":{},"islandMaskData":{},"itemData":{}}
 
     generateItemData(state["itemData"])
 
-    for i in range(0, 100):
-        state["playerData"]["inventory"][str(i)] = 1
+    for item, data in state["itemData"].items():
+        state["playerData"]["inventory"][item] = 1
 
     generateMap(state)
 
