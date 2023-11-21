@@ -347,14 +347,6 @@ def sampleWithRemove(possibleItems, amount):
 
     return chosen
 
-def padList(l, length, value):
-    amountToAdd = length - len(l)
-    if amountToAdd <= 0:
-        return l
-
-    for i in range(0, amountToAdd):
-        l.append(value)
-
 def randomChance(chance, rolls):
     chanceLanded = False
     for r in range(rolls):
@@ -367,7 +359,7 @@ def getDroppedItems(dropTable):
     itemsDropped = {}
     for i, itemDrop in enumerate(chanceData):
         (item, count), chance = itemDrop
-        if randomChance(chance, 1):
+        if randomChance(chance, rollCount):
             if item in itemsDropped:
                 itemsDropped[item] += count
             else:
