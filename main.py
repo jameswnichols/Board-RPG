@@ -532,6 +532,11 @@ def show_board(state):
 def showInventory(state):
     playerInventory = state["playerData"]
     page = state["page"]
+    itemsPerPage = SCREEN_HEIGHT - 1 #Space for top bar
+    totalPages = math.ceil(len(playerInventory)/itemsPerPage)
+
+    inventory = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT))
+
     
 def renderMap(state):
     mapData = state["mapData"]
@@ -588,7 +593,7 @@ def parseCommand(command : str):
         if len(args) >= necessaryArgcount and len(args) <= allParameters:
             COMMANDS[command](state, *args)
 
-def show(state : dict, arg : str, page : int = 0):
+def show(state : dict, arg : str, page : int = 1):
     if arg in ["board","map"]:
         state["renderView"] = "showBoard"
     if arg in ["inv","inventory"]:
