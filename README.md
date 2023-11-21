@@ -6,8 +6,8 @@ Features:
 - ???
 
 Commands (Optional arguments start with `+`'s):
-- `show` > `board` | `inv` / `inventory`, `+page`
-- `move` > `f` / `for` / `forwards` | `b` / `back` | `l` / `left` | `r` / `right`, `+steps`
+- `show` > `board` | `inv / inventory`, `+page`
+- `move` > `f / for / forwards` | `b / back` | `l / left` | `r / right`, `+steps`
 
 Restrictions:
 - Only allowed to have one `main` file.
