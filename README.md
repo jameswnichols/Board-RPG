@@ -7,7 +7,7 @@ Features:
 
 Commands (Optional args start with `+`'s and possible args are separated with `|`'s):
 - `show` > `board` | `inv / inventory`, `+page[1 -> ...]`
-- `move` > `+f / for / forwards` | `+b / back` | `+l / left` | `+r / right`, `+steps[1 -> ...]`
+- `move` > `+f / for / forwards` | `+b / back / backwards` | `+l / left` | `+r / right`, `+steps[1 -> ...]`
 - `dir / face` > `n` | `ne` | `e` | `se` | `s` | `sw` | `w` | `nw`
 - `equip / select` > `slot[1 -> ...]`
 

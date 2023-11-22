@@ -710,7 +710,6 @@ def equipItem(state : dict, arg):
             state["playerData"]["selectedItem"] = itemName
             state["renderView"] = "inventory"
             state["page"] = findItemPage(state, itemName)
-        
 
 COMMANDS = {
     "show" : show,
