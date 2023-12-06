@@ -570,7 +570,15 @@ def showInventory(state : dict):
         writeTextToScreen(inventory,f"↳ {itemDescription}",(3, 2 + 3 * (i-startIndex)))
 
     renderScreenToConsole(inventory)
-    
+
+def showTradeMenu(state : dict):
+    playerInventory = state["playerData"]["inventory"]
+    currentTrade = state["playerData"]["currentTrade"]
+    tradeScreen = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT))
+    writeTextToScreen(tradeScreen,"Trade:")
+
+    renderScreenToConsole(tradeScreen)
+
 def renderMap(state):
     mapData = state["mapData"]
     objectData = state["objectData"]
@@ -719,8 +727,6 @@ def interactLookup(state : dict):
     #If there is nothing at that spot skip.
     if not interactLocation in state["objectData"]:
         return
-    
-
 
 COMMANDS = {
     "show" : show,
@@ -758,7 +764,7 @@ def generateItemData(itemData : dict):
     generateItem(itemData, "Ice Picks", 0, 0, 1,"Needed to climb mountain tiles.")
 
 def generateState():
-    state = {"renderView":None,"page":1,"playerData":{"health":100,"maximumHealth":100,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Pickaxe"},"mapData":{},"objectData":{},"islandMaskData":{},"itemData":{}}
+    state = {"renderView":None,"page":1,"playerData":{"health":100,"maximumHealth":100,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Pickaxe","currentTrade":{}},"mapData":{},"objectData":{},"islandMaskData":{},"itemData":{}}
 
     generateItemData(state["itemData"])
 
