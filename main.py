@@ -711,6 +711,17 @@ def equipItem(state : dict, arg):
             state["renderView"] = "inventory"
             state["page"] = findItemPage(state, itemName)
 
+def interactLookup(state : dict):
+    state["renderView"] = "showBoard"
+    playerX, playerY = state["playerData"]["position"]
+    playerDirection = state["playerData"]["direction"]
+    interactLocation = (playerX + playerDirection[0], playerY + playerDirection[1])
+    #If there is nothing at that spot skip.
+    if not interactLocation in state["objectData"]:
+        return
+    
+
+
 COMMANDS = {
     "show" : show,
     "dir" : changePlayerDirection,
@@ -718,6 +729,7 @@ COMMANDS = {
     "move" : movePlayer,
     "equip" : equipItem,
     "select" : equipItem,
+    "interact" : interactLookup,
 }
 
 def generateItem(itemData, itemName : str, itemDamage : str, nullifyChance : int, randomRolls : int, description : str):
