@@ -25,6 +25,7 @@ VILLAGE_RADIUS = 5
 VILLAGE_EXCLUSION_RADIUS = 15
 MIN_HOUSES = 5
 MAX_HOUSES_PERCENTAGE = 0.5
+VILLAGER_AMOUNT = 75
 #LEFT UP RIGHT DOWN
 POSSIBLE_COMBOS = {(0, 0, 0, 0):" ",
                    (0, 0, 0, 1):"║",
@@ -184,7 +185,7 @@ def getPointOnLine(pos1, pos2, len):
     return (pos1[0] - xChange * len, pos1[1] - yChange * len)
 
 def getAdjecentPoints(pos):
-    shifts = [(-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1)]
+    shifts = [(-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1)]
 
     return [(pos[0]+s[0], pos[1]+s[1]) for s in shifts]
 
@@ -290,6 +291,8 @@ def islandRing(map, centre, radius, shiftMaxDistance, ringSize, threshold, tile,
 def generateVillages(map, objectData, possiblePositions : list):
     villagePositions = pickVillagePoints(possiblePositions, 3)
 
+    villagerPositions = []
+
     for pos in villagePositions:
 
         villageCrossroads = getRandomPointsInCircle(pos, VILLAGE_RADIUS, 4)
@@ -318,6 +321,10 @@ def generateVillages(map, objectData, possiblePositions : list):
 
         for houseLoc in random.sample(houseLocations, houseSamples):
             objectData[houseLoc] = {"objectType":"blocking","display":"⌂"}
+            villagerPositions.extend(getAdjecentPoints(houseLoc))
+    
+    return villagerPositions
+
 
 def getSpawnLocations(map, objectData, pointDict : dict):
 
@@ -381,15 +388,35 @@ def generateTradeTable(*trades : list):
     return table
 
 def pickTrade(tradeTable : list):
-    pass
-
-
+    hasChosenTrade = False
+    while not hasChosenTrade:
+        randomIndex = random.randint(0, len(tradeTable)-1)
+        trade = tradeTable[randomIndex]
+        tradeUses = trade["uses"]
+        if not tradeUses:
+            return {"input":trade["input"],"output":trade["output"]}
+        elif tradeUses > 0:
+            tradeTable[randomIndex]["uses"] -= 1
+            return {"input":trade["input"],"output":trade["output"]}
+            
 def generateObjects(objectData, possibleSpawns, spawnAmount, symbol, dropTable):
     chosenSpawns = sampleWithRemove(possibleSpawns,spawnAmount)
     for spawn in chosenSpawns:
         itemsChosen = getDroppedItems(dropTable)
         print(f"Object : {symbol} Drops : {itemsChosen}")
         objectData[spawn] = {"objectType":"intTile","display":symbol,"drops":itemsChosen}
+
+def generateVillagers(map, objectData, positions, amount, tradeTable):
+    chosen = 0
+    while chosen < amount:
+        chosenPosition = sampleWithRemove(positions, 1)[0]
+        print(chosenPosition)
+        #If space isnt occupied and space isnt a road
+        if chosenPosition not in objectData and map[chosenPosition] not in list(POSSIBLE_COMBOS.values()):
+            chosenTrade = pickTrade(tradeTable)
+            objectData[chosenPosition] = {"objectType":"villager","display":"♙","trade":chosenTrade}
+            chosen += 1
+
 
 def generateMap(state):
     map = setupMapDictionary(" ")
@@ -430,7 +457,7 @@ def generateMap(state):
 
     state["islandMaskData"] = spawningPoints
 
-    generateVillages(map, objectData, villagePositions)
+    villagerPositions = generateVillages(map, objectData, villagePositions)
 
     spawnLists = getSpawnLocations(map, objectData, spawningPoints)
 
@@ -439,10 +466,10 @@ def generateMap(state):
     rockDropTable = generateDropTable(1, [("Stone", 1), 1], [("Stone", 1), 0.5], [("Stone", 1), 0.25], [("Gem", 1), 0.1], [("Gem", 1), 0.05])
     moutainRockDropTable = generateDropTable(1, [("Stone", 1), 1], [("Stone", 1), 0.5], [("Stone", 1), 0.25], [("Gem", 1), 0.5], [("Gem", 1), 0.25], [("Gem", 1), 0.125])
 
-    villagerTradeTable = generateTradeTable([("Wood", 10), ("Gem", 1), 999],
-                                            [("Stone", 10), ("Gem", 1), 999],
-                                            [("Wood", 15), ("Gem", 1), 999],
-                                            [("Stone", 15), ("Gem", 1), 999],
+    villagerTradeTable = generateTradeTable([("Wood", 10), ("Gem", 1), None],
+                                            [("Stone", 10), ("Gem", 1), None],
+                                            [("Wood", 15), ("Gem", 1), None],
+                                            [("Stone", 15), ("Gem", 1), None],
                                             [("Gem", 2), ("Skill Fragment", 1), 50],
                                             [("Gem", 15), ("Snow Boots", 1), 50],
                                             [("Gem", 30), ("Ice Picks", 1), 30],
@@ -459,6 +486,8 @@ def generateMap(state):
     generateObjects(objectData, spawnLists["innerHills"], HILL_ROCK_AMOUNT, "☁", rockDropTable)
 
     generateObjects(objectData, spawnLists["mountains"], MOUNTAIN_ROCK_AMOUNT, "☁", moutainRockDropTable)
+
+    generateVillagers(map, objectData, villagerPositions, VILLAGER_AMOUNT, villagerTradeTable)
 
     playerSpawn = sampleWithRemove(spawnLists["beach"], 1)[0]
 
