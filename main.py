@@ -374,6 +374,16 @@ def generateDropTable(rolls : int, *itemDrops : list):
         dropDict["chanceData"].append(drop)
     return dropDict
 
+def generateTradeTable(*trades : list):
+    table = []
+    for trade in trades:
+        table.append({"input":trade[0],"output":trade[1],"uses":trade[2]})
+    return table
+
+def pickTrade(tradeTable : list):
+    pass
+
+
 def generateObjects(objectData, possibleSpawns, spawnAmount, symbol, dropTable):
     chosenSpawns = sampleWithRemove(possibleSpawns,spawnAmount)
     for spawn in chosenSpawns:
@@ -428,6 +438,19 @@ def generateMap(state):
     woodDropTable = generateDropTable(1, [("Wood", 1), 1], [("Wood", 1), 0.5], [("Wood", 1), 0.25])
     rockDropTable = generateDropTable(1, [("Stone", 1), 1], [("Stone", 1), 0.5], [("Stone", 1), 0.25], [("Gem", 1), 0.1], [("Gem", 1), 0.05])
     moutainRockDropTable = generateDropTable(1, [("Stone", 1), 1], [("Stone", 1), 0.5], [("Stone", 1), 0.25], [("Gem", 1), 0.5], [("Gem", 1), 0.25], [("Gem", 1), 0.125])
+
+    villagerTradeTable = generateTradeTable([("Wood", 10), ("Gem", 1), 999],
+                                            [("Stone", 10), ("Gem", 1), 999],
+                                            [("Wood", 15), ("Gem", 1), 999],
+                                            [("Stone", 15), ("Gem", 1), 999],
+                                            [("Gem", 2), ("Skill Fragment", 1), 50],
+                                            [("Gem", 15), ("Snow Boots", 1), 50],
+                                            [("Gem", 30), ("Ice Picks", 1), 30],
+                                            [("Skill Fragment", 10), ("Health Up Orb",1),30],
+                                            [("Skill Fragment", 10), ("Attack Up Orb",1),30],
+                                            [("Gem", 10), ("Soldier's Sword", 1), 30],
+                                            [("Gem", 10), ("Miner's Pickaxe", 1), 30]
+                                            )
 
     generateObjects(objectData, spawnLists["grass"],TREE_AMOUNT, "♣", woodDropTable)
 
@@ -539,7 +562,6 @@ def findItemPage(state : dict, itemName):
     itemIndex = list(playerInventory.keys()).index(itemName)+1
     itemsPerPage = ((SCREEN_HEIGHT-1)//3)
     return math.ceil(itemIndex/itemsPerPage)
-
 
 def showInventory(state : dict):
     playerInventory = state["playerData"]["inventory"]
