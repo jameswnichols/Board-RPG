@@ -361,8 +361,8 @@ def randomChance(chance, rolls):
             chanceLanded = True
     return chanceLanded
 
-def getDroppedItems(dropTable):
-    rollCount, chanceData = dropTable["rolls"], dropTable["chanceData"]
+def getDroppedItems(dropTable, rolls):
+    rollCount, chanceData = rolls, dropTable["chanceData"]
     itemsDropped = {}
     for i, itemDrop in enumerate(chanceData):
         (item, count), chance = itemDrop
@@ -375,8 +375,8 @@ def getDroppedItems(dropTable):
     return itemsDropped
     #Formatted as {rolls: ROLLS, chanceData: [[(ITEM, COUNT), CHANCE]]}
 
-def generateDropTable(rolls : int, *itemDrops : list):
-    dropDict = {"rolls":rolls,"chanceData":[]}
+def generateDropTable(*itemDrops : list):
+    dropDict = {"chanceData":[]}
     for drop in itemDrops:
         dropDict["chanceData"].append(drop)
     return dropDict
@@ -399,12 +399,12 @@ def pickTrade(tradeTable : list):
             tradeTable[randomIndex]["uses"] -= 1
             return {"input":trade["input"],"output":trade["output"]}
             
-def generateObjects(objectData, possibleSpawns, spawnAmount, symbol, dropTable):
+def generateObjects(objectData, possibleSpawns, spawnAmount, symbol, dropTable, harvestRequires : list = []):
     chosenSpawns = sampleWithRemove(possibleSpawns,spawnAmount)
     for spawn in chosenSpawns:
-        itemsChosen = getDroppedItems(dropTable)
-        print(f"Object : {symbol} Drops : {itemsChosen}")
-        objectData[spawn] = {"objectType":"intTile","display":symbol,"drops":itemsChosen}
+        #itemsChosen = getDroppedItems(dropTable)
+        #print(f"Object : {symbol} Drops : {itemsChosen}")
+        objectData[spawn] = {"objectType":"intTile","display":symbol,"drops":dropTable,"harvestRequires":harvestRequires}
 
 def generateVillagers(map, objectData, positions, amount, tradeTable):
     chosen = 0
@@ -461,9 +461,9 @@ def generateMap(state):
     spawnLists = getSpawnLocations(map, objectData, spawningPoints)
 
     #Generate Interactable Tiles
-    woodDropTable = generateDropTable(1, [("Wood", 1), 1], [("Wood", 1), 0.5], [("Wood", 1), 0.25])
-    rockDropTable = generateDropTable(1, [("Stone", 1), 1], [("Stone", 1), 0.5], [("Stone", 1), 0.25], [("Gem", 1), 0.1], [("Gem", 1), 0.05])
-    moutainRockDropTable = generateDropTable(1, [("Stone", 1), 1], [("Stone", 1), 0.5], [("Stone", 1), 0.25], [("Gem", 1), 0.5], [("Gem", 1), 0.25], [("Gem", 1), 0.125])
+    woodDropTable = generateDropTable([("Wood", 1), 1], [("Wood", 1), 0.5], [("Wood", 1), 0.25])
+    rockDropTable = generateDropTable([("Stone", 1), 1], [("Stone", 1), 0.5], [("Stone", 1), 0.25], [("Gem", 1), 0.1], [("Gem", 1), 0.05])
+    moutainRockDropTable = generateDropTable([("Stone", 1), 1], [("Stone", 1), 0.5], [("Stone", 1), 0.25], [("Gem", 1), 0.5], [("Gem", 1), 0.25], [("Gem", 1), 0.125])
 
     villagerTradeTable = generateTradeTable([("Wood", 10), ("Gem", 1), None],
                                             [("Stone", 10), ("Gem", 1), None],
@@ -475,16 +475,17 @@ def generateMap(state):
                                             [("Skill Fragment", 10), ("Health Up Orb",1),30],
                                             [("Skill Fragment", 10), ("Attack Up Orb",1),30],
                                             [("Gem", 10), ("Soldier's Sword", 1), 30],
-                                            [("Gem", 10), ("Miner's Pickaxe", 1), 30]
+                                            [("Gem", 10), ("Miner's Pickaxe", 1), 30],
+                                            [("Gem", 10), ("Lumber Axe", 1), 30]
                                             )
 
-    generateObjects(objectData, spawnLists["grass"],TREE_AMOUNT, "♣", woodDropTable)
+    generateObjects(objectData, spawnLists["grass"],TREE_AMOUNT, "♣", woodDropTable,["Axe","Lumber Axe"])
 
-    generateObjects(objectData, spawnLists["hills"],HILL_TREE_AMOUNT,"↟", woodDropTable)
+    generateObjects(objectData, spawnLists["hills"],HILL_TREE_AMOUNT,"↟", woodDropTable,["Axe","Lumber Axe"])
 
-    generateObjects(objectData, spawnLists["innerHills"], HILL_ROCK_AMOUNT, "☁", rockDropTable)
+    generateObjects(objectData, spawnLists["innerHills"], HILL_ROCK_AMOUNT, "☁", rockDropTable,["Pickaxe","Miner's Pickaxe"])
 
-    generateObjects(objectData, spawnLists["mountains"], MOUNTAIN_ROCK_AMOUNT, "☁", moutainRockDropTable)
+    generateObjects(objectData, spawnLists["mountains"], MOUNTAIN_ROCK_AMOUNT, "☁", moutainRockDropTable,["Pickaxe","Miner's Pickaxe"])
 
     generateVillagers(map, objectData, villagerPositions, VILLAGER_AMOUNT, villagerTradeTable)
 
@@ -700,8 +701,14 @@ def renderView(state):
         showInventory(state)
     state["renderView"] = None
 
+def getItemRolls(state : dict, itemName : str):
+    return 0 if itemName not in state["itemData"] else state["itemData"][itemName]["randomRolls"]
+
+def getPlayerSelected(state : dict):
+    return state["playerData"]["selectedItem"]
+
 def playerHasItem(state : dict, itemName : str):
-    return itemName in state["playerData"]["inventory"]
+    return (itemName in state["playerData"]["inventory"]) and state["playerData"]["inventory"][itemName] > 0
 
 def getAmountOfItem(state : dict, itemName : str):
     return 0 if not playerHasItem(state, itemName) else state["playerData"]["inventory"][itemName]
@@ -835,6 +842,13 @@ def equipItem(state : dict, arg):
             state["renderView"] = "inventory"
             state["page"] = findItemPage(state, itemName)
 
+def harvestTile(state, location):
+    objectData = state["objectData"][location]
+    selectedItem = getPlayerSelected(state)
+    if not objectData["harvestRequires"] or selectedItem in objectData["harvestRequires"]:
+        rolls = getItemRolls(state, selectedItem)
+        print(rolls)
+
 def interactLookup(state : dict):
     state["renderView"] = "showBoard"
     playerX, playerY = state["playerData"]["position"]
@@ -849,6 +863,8 @@ def interactLookup(state : dict):
     
     if objectType == "villager":
         showTradeMenu(state, objectAt["trade"])
+    elif objectType == "intTile":
+        harvestTile(state, interactLocation)
 
 COMMANDS = {
     "show" : show,
@@ -865,6 +881,7 @@ def generateItem(itemData, itemName : str, itemDamage : str, nullifyChance : int
 
 def generateItemData(itemData : dict):
     generateItem(itemData, "Axe", 5, 0, 1,"Can cut trees and does 0.5 x ♥.")
+    generateItem(itemData, "Lumber Axe", 15, 0, 2, "Can cut trees, does 1.5 x ♥ and has 2 x drop rates.")
     generateItem(itemData, "Wood", 0, 0, 1, "A Common resource that's useful for trading.")
     generateItem(itemData, "Stone", 0, 0, 1, "A tough material that's useful for trading.")
     generateItem(itemData, "Gem", 0, 0, 1, "A rare gem that's valuable to Villagers.")
@@ -886,13 +903,12 @@ def generateItemData(itemData : dict):
     generateItem(itemData, "Ice Picks", 0, 0, 1,"Needed to climb mountain tiles.")
 
 def generateState():
-    state = {"renderView":None,"page":1,"playerData":{"health":500,"maximumHealth":100,"baseMaximumHealth":100,"attackBonus":0,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Pickaxe"},"mapData":{},"objectData":{},"islandMaskData":{},"itemData":{}}
+    state = {"renderView":None,"page":1,"playerData":{"health":500,"maximumHealth":100,"baseMaximumHealth":100,"attackBonus":0,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Axe"},"mapData":{},"objectData":{},"islandMaskData":{},"itemData":{}}
 
     generateItemData(state["itemData"])
 
     for item, data in state["itemData"].items():
         givePlayerItem(state, item, 1000)
-        #state["playerData"]["inventory"][item] = 1000
 
     generateMap(state)
 
