@@ -632,6 +632,19 @@ def showInventory(state : dict):
 
     renderScreenToConsole(inventory)
 
+def showHelp(state : dict):
+    page = state["page"]
+    commandsPerPage = ((SCREEN_HEIGHT-1)//3)
+    totalPages = math.ceil(len(COMMANDS)/commandsPerPage)
+    if page > totalPages:
+        page = totalPages
+    helpScreen = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT))
+    pageText = f"Page {page}/{totalPages}"
+    writeTextToScreen(helpScreen,"Help:")
+    writeTextToScreen(helpScreen,pageText,(SCREEN_WIDTH-len(pageText),0))
+
+    renderScreenToConsole(helpScreen)
+
 def validateTradeInput(inp : str):
     if inp.lower() in ["c","confirm"]:
         return "confirm"
@@ -700,6 +713,8 @@ def renderView(state):
         show_board(state)
     if view == "inventory":
         showInventory(state)
+    if view == "help":
+        showHelp(state)
     state["renderView"] = None
 
 def getItemRolls(state : dict, itemName : str):
@@ -763,6 +778,9 @@ def show(state : dict, showType : str, page : int = 1):
         state["renderView"] = "showBoard"
     if showType in ["inv","inventory"]:
         state["renderView"] = "inventory"
+        state["page"] = page if isinstance(page, int) and page > 1 else 1
+    if showType in ["help"]:
+        state["renderView"] = "help"
         state["page"] = page if isinstance(page, int) and page > 1 else 1
 
 def shiftIndex(l : list, index : int, shift : int):
