@@ -901,7 +901,7 @@ COMMANDS = {
     "trade" : interactLookup,
     "save" : saveGame,
     "load" : loadGame,
-    "giveAll" : giveAllItems,
+    "giveall" : giveAllItems,
 }
 
 def generateItem(itemData, itemName : str, itemDamage : str, nullifyChance : int, randomRolls : int, description : str):
