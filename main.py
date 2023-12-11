@@ -884,6 +884,10 @@ def loadGame(state : dict, filename : str):
             state[key] = val
     state["renderView"] = "showBoard"
 
+def giveAllItems(state : dict):
+    for item, data in state["itemData"].items():
+        givePlayerItem(state, item, 1000)
+
 COMMANDS = {
     "show" : show,
     "dir" : changePlayerDirection,
@@ -896,7 +900,8 @@ COMMANDS = {
     "mine" : interactLookup,
     "trade" : interactLookup,
     "save" : saveGame,
-    "load" : loadGame
+    "load" : loadGame,
+    "giveAll" : giveAllItems,
 }
 
 def generateItem(itemData, itemName : str, itemDamage : str, nullifyChance : int, randomRolls : int, description : str):
@@ -929,9 +934,6 @@ def generateState():
     state = {"renderView":None,"page":1,"playerData":{"health":500,"maximumHealth":100,"baseMaximumHealth":100,"attackBonus":0,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Axe"},"mapData":{},"objectData":{},"islandMaskData":{},"itemData":{}}
 
     generateItemData(state["itemData"])
-
-    for item, data in state["itemData"].items():
-        givePlayerItem(state, item, 1000)
 
     generateMap(state)
 
