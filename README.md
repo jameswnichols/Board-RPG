@@ -11,7 +11,7 @@ Commands (Optional args start with `+`'s and possible args are separated with `|
 - `dir / face` > `n` | `ne` | `e` | `se` | `s` | `sw` | `w` | `nw`
 - `equip / select` > `slot[1 -> ...]`
 - `save` > `[filename]`
-- `load` > `filename`
+- `load` > `[filename]`
 - `interact / cut / mine / trade`
 - `giveall` > *CHEAT - Gives yourself 1000 of every item in the game*
 
