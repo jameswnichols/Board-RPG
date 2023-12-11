@@ -540,13 +540,18 @@ def generatePlayerHealthBar(playerData):
     playerHealth = math.floor(playerHealth / 10)
     maxHealth = math.ceil(maxHealth / 10)
     #emptyHearts = totalHearts - filledHearts
+    healthBarLines = []
     heartString = ""
     for i in range(0, maxHealth):
         if i < playerHealth:
             heartString += "♥"
         else:
             heartString += "♡"
-    return heartString
+        if len(heartString) == 20:
+            healthBarLines.append(heartString)
+            heartString = ""
+    healthBarLines.append(heartString)
+    return healthBarLines
 
 def show_board(state):
     mapData = state["mapData"]
@@ -569,7 +574,11 @@ def show_board(state):
 
             writeTextToScreen(board, character, (boardX, boardY))
     
-    writeTextToScreen(board, generatePlayerHealthBar(playerData),(0, 0))
+
+    healthBarLines = generatePlayerHealthBar(playerData)
+
+    for i, line in enumerate(healthBarLines):
+        writeTextToScreen(board, line,(0, i))
     selectedText = f"Selected: {selectedItem}"
     writeTextToScreen(board, selectedText, (SCREEN_WIDTH-len(selectedText), 0))
     
@@ -631,7 +640,6 @@ def validateTradeInput(inp : str):
 
 def showTradeMenu(state : dict, trade : dict):
     state["renderView"] = "showBoard"
-    playerInventory = state["playerData"]["inventory"]
     inputItemName, inputItemCount = trade["input"]
     outputItemName, outputItemCount = trade["output"]
     inputHas, outputHas = getAmountOfItem(state, inputItemName), getAmountOfItem(state, outputItemName)
@@ -666,7 +674,6 @@ def showTradeMenu(state : dict, trade : dict):
             removePlayerItem(state, inputItemName, inputItemCount)
             givePlayerItem(state, outputItemName, outputItemCount)
             return
-    
 
 def renderMap(state):
     mapData = state["mapData"]
@@ -704,12 +711,20 @@ def givePlayerItem(state : dict, itemName : str, itemCount : int):
         state["playerData"]["inventory"][itemName] = itemCount
     else:
         state["playerData"]["inventory"][itemName] += itemCount
+    updatePlayerOrbs(state)
 
 def removePlayerItem(state : dict, itemName : str, itemCount : int):
     itemAmount = getAmountOfItem(state, itemName)
     if itemAmount > 0:
         amountLeftOver = 0 if itemAmount - itemCount < 0 else itemAmount - itemCount
         state["playerData"]["inventory"][itemName] = amountLeftOver
+    updatePlayerOrbs(state)
+
+def updatePlayerOrbs(state):
+    baseHealth = state["playerData"]["baseMaximumHealth"]
+    newMaximumHealth = baseHealth + getAmountOfItem(state, "Health Up Orb") * 10
+    state["playerData"]["maximumHealth"] = newMaximumHealth
+    state["playerData"]["attackBonus"] = getAmountOfItem(state, "Attack Up Orb")
 
 def convertArgs(argList : list):
     convertedList = []
@@ -871,12 +886,13 @@ def generateItemData(itemData : dict):
     generateItem(itemData, "Ice Picks", 0, 0, 1,"Needed to climb mountain tiles.")
 
 def generateState():
-    state = {"renderView":None,"page":1,"playerData":{"health":100,"maximumHealth":100,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Pickaxe"},"mapData":{},"objectData":{},"islandMaskData":{},"itemData":{}}
+    state = {"renderView":None,"page":1,"playerData":{"health":500,"maximumHealth":100,"baseMaximumHealth":100,"attackBonus":0,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Pickaxe"},"mapData":{},"objectData":{},"islandMaskData":{},"itemData":{}}
 
     generateItemData(state["itemData"])
 
     for item, data in state["itemData"].items():
-        state["playerData"]["inventory"][item] = 1000
+        givePlayerItem(state, item, 1000)
+        #state["playerData"]["inventory"][item] = 1000
 
     generateMap(state)
 
