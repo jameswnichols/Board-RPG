@@ -643,6 +643,22 @@ def showHelp(state : dict):
     writeTextToScreen(helpScreen,"Help:")
     writeTextToScreen(helpScreen,pageText,(SCREEN_WIDTH-len(pageText),0))
 
+    commandKeys = list(COMMANDS.keys())
+
+    startIndex = commandsPerPage * (page-1)
+    endIndex = commandsPerPage * page
+
+    for i in range(startIndex, min(endIndex, len(commandKeys))):
+        command = commandKeys[i]
+        commandArgCount = COMMANDS[command].__code__.co_argcount
+        commandArgs = COMMANDS[command].__code__.co_varnames[1:commandArgCount]
+        commandAnnotations = COMMANDS[command].__annotations__
+        commandsCombined = {command : commandAnnotations[command].__name__ for command in commandArgs}
+        argsPretty = ", ".join([f"{arg} : {argType}" for arg, argType in commandsCombined.items()])
+        writeTextToScreen(helpScreen, f"• {command}", (0, 1 + 3 * (i-startIndex)))
+        if commandArgs:
+            writeTextToScreen(helpScreen, f"↳ {argsPretty}", (3, 2 + 3 * (i-startIndex)))
+
     renderScreenToConsole(helpScreen)
 
 def validateTradeInput(inp : str):
@@ -760,6 +776,8 @@ def convertArgs(argList : list):
     return convertedList
 
 def parseCommand(command : str):
+    if not command:
+        return
     splitCommand = command.strip().split()
     command = splitCommand[0].lower()
     args = convertArgs(splitCommand[1:])
@@ -809,7 +827,7 @@ def validPlayerPosition(state : dict, position : tuple):
 
     return canTraverse
 
-def movePlayer(state : dict, moveType : str = "f", steps : int = 1):
+def movePlayer(state : dict, moveDirection : str = "f", steps : int = 1):
     state["renderView"] = "showBoard"
     playerX, playerY = state["playerData"]["position"]
     playerDirection = state["playerData"]["direction"]
@@ -817,7 +835,7 @@ def movePlayer(state : dict, moveType : str = "f", steps : int = 1):
     playerDirectionIndex = directions.index(playerDirection)
     validMove = True
     moveShift = 0
-    arg = moveType.lower()
+    arg = moveDirection.lower()
     if arg in ["f","for","forwards"]:
         moveShift = 0
     elif arg in ["b","back","backwards"]:
