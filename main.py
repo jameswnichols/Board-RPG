@@ -417,7 +417,6 @@ def generateVillagers(map, objectData, positions, amount, tradeTable):
             objectData[chosenPosition] = {"objectType":"villager","display":"♙","trade":chosenTrade}
             chosen += 1
 
-
 def generateMap(state):
     map = setupMapDictionary(" ")
 
@@ -622,13 +621,30 @@ def showInventory(state : dict):
 
     renderScreenToConsole(inventory)
 
-def showTradeMenu(state : dict):
+def showTradeMenu(state : dict, trade : dict):
     playerInventory = state["playerData"]["inventory"]
-    currentTrade = state["playerData"]["currentTrade"]
-    tradeScreen = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT))
-    writeTextToScreen(tradeScreen,"Trade:")
+    inputItemName, inputItemCount = trade["input"]
+    outputItemName, outputItemCount = trade["output"]
+    inputHas, outputHas = getAmountOfItem(state, inputItemName), getAmountOfItem(state, outputItemName)
 
-    renderScreenToConsole(tradeScreen)
+    tradeScreen = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT))
+    writeTextToScreen(tradeScreen,f"Trade:")
+
+    heightSplit = SCREEN_HEIGHT//4
+    writeTextToScreen(tradeScreen,"You Give:",(0, heightSplit * 1))
+    writeTextToScreen(tradeScreen,)
+
+    receiveText = ":You Receive"
+    writeTextToScreen(tradeScreen,receiveText,(SCREEN_WIDTH-len(receiveText),heightSplit * 3))
+
+    madeTrade = False
+    
+    while not madeTrade:
+        clearConsole()
+        renderScreenToConsole(tradeScreen)
+        input()
+
+    state["renderView"] = "showBoard"
 
 def renderMap(state):
     mapData = state["mapData"]
@@ -778,6 +794,12 @@ def interactLookup(state : dict):
     #If there is nothing at that spot skip.
     if not interactLocation in state["objectData"]:
         return
+    
+    objectAt = state["objectData"][interactLocation]
+    objectType = objectAt["objectType"]
+    
+    if objectType == "villager":
+        showTradeMenu(state, objectAt["trade"])
 
 COMMANDS = {
     "show" : show,
@@ -815,7 +837,7 @@ def generateItemData(itemData : dict):
     generateItem(itemData, "Ice Picks", 0, 0, 1,"Needed to climb mountain tiles.")
 
 def generateState():
-    state = {"renderView":None,"page":1,"playerData":{"health":100,"maximumHealth":100,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Pickaxe","currentTrade":{}},"mapData":{},"objectData":{},"islandMaskData":{},"itemData":{}}
+    state = {"renderView":None,"page":1,"playerData":{"health":100,"maximumHealth":100,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Pickaxe"},"mapData":{},"objectData":{},"islandMaskData":{},"itemData":{}}
 
     generateItemData(state["itemData"])
 
@@ -832,6 +854,8 @@ if __name__ == "__main__":
     state = generateState()
 
     renderMap(state)
+
+    showTradeMenu(state,{"input":("Wood", 10), "output":("Gem", 1)})
 
     running = True
 
