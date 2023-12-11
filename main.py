@@ -776,9 +776,9 @@ def convertArgs(argList : list):
     return convertedList
 
 def parseCommand(command : str):
-    if not command:
-        return
     splitCommand = command.strip().split()
+    if not splitCommand:
+        return
     command = splitCommand[0].lower()
     args = convertArgs(splitCommand[1:])
     if command in COMMANDS:
