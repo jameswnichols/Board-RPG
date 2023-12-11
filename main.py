@@ -657,7 +657,7 @@ def showHelp(state : dict):
         argsPretty = ", ".join([f"{arg} : {argType}" for arg, argType in commandsCombined.items()])
         writeTextToScreen(helpScreen, f"• {command}", (0, 1 + 3 * (i-startIndex)))
         if commandArgs:
-            writeTextToScreen(helpScreen, f"↳ {argsPretty}", (3, 2 + 3 * (i-startIndex)))
+            writeTextToScreen(helpScreen, f"↳ {argsPretty}", (2, 2 + 3 * (i-startIndex)))
 
     renderScreenToConsole(helpScreen)
 
