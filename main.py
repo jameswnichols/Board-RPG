@@ -902,6 +902,7 @@ COMMANDS = {
     "save" : saveGame,
     "load" : loadGame,
     "giveall" : giveAllItems,
+    "rendermap" : renderMap,
 }
 
 def generateItem(itemData, itemName : str, itemDamage : str, nullifyChance : int, randomRolls : int, description : str):
@@ -937,14 +938,10 @@ def generateState():
 
     generateMap(state)
 
-    renderMap(state)
-
     return state
 
 if __name__ == "__main__":
     state = generateState()
-
-    renderMap(state)
 
     running = True
 

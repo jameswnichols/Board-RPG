@@ -13,6 +13,7 @@ Commands (Optional args start with `+`'s and possible args are separated with `|
 - `save` > `[filename]`
 - `load` > `[filename]`
 - `interact / cut / mine / trade`
+- `rendermap` > *Renders the map to a file called "map.txt".*
 - `giveall` > *CHEAT - Gives yourself 1000 of every item in the game*.
 
 Restrictions:
