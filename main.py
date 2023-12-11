@@ -872,6 +872,17 @@ def interactLookup(state : dict):
     elif objectType == "intTile":
         harvestTile(state, interactLocation)
 
+def saveGame(state : dict, filename : str):
+    filename = filename+".sav"
+    with open(filename, "w") as f:
+        json.dump(state, f)
+
+def loadGame(state : dict, filename : str):
+    filename = filename+".sav"
+    with open(filename, "r") as f:
+        for key, val in json.load(f).items():
+            state[key] = val
+
 COMMANDS = {
     "show" : show,
     "dir" : changePlayerDirection,
@@ -882,7 +893,9 @@ COMMANDS = {
     "interact" : interactLookup,
     "cut" : interactLookup,
     "mine" : interactLookup,
-    "trade" : interactLookup
+    "trade" : interactLookup,
+    "save" : saveGame,
+    "load" : loadGame
 }
 
 def generateItem(itemData, itemName : str, itemDamage : str, nullifyChance : int, randomRolls : int, description : str):
