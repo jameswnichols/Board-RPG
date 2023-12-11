@@ -758,10 +758,10 @@ def parseCommand(command : str):
         if len(args) >= necessaryArgcount and len(args) <= allParameters:
             COMMANDS[command](state, *args)
 
-def show(state : dict, arg : str, page : int = 1):
-    if arg in ["board","map"]:
+def show(state : dict, showType : str, page : int = 1):
+    if showType in ["board","map"]:
         state["renderView"] = "showBoard"
-    if arg in ["inv","inventory"]:
+    if showType in ["inv","inventory"]:
         state["renderView"] = "inventory"
         state["page"] = page if isinstance(page, int) and page > 1 else 1
 
@@ -776,9 +776,9 @@ def shiftIndex(l : list, index : int, shift : int):
             currentIndex = 0
     return currentIndex
 
-def changePlayerDirection(state : dict, arg : str):
-    if arg in VALID_DIRECTIONS:
-        state["playerData"]["direction"] = VALID_DIRECTIONS[arg]
+def changePlayerDirection(state : dict, direction : str):
+    if direction in VALID_DIRECTIONS:
+        state["playerData"]["direction"] = VALID_DIRECTIONS[direction]
         state["renderView"] = "showBoard"
 
 def validPlayerPosition(state : dict, position : tuple):
@@ -791,7 +791,7 @@ def validPlayerPosition(state : dict, position : tuple):
 
     return canTraverse
 
-def movePlayer(state : dict, arg : str = "f", steps : int = 1):
+def movePlayer(state : dict, moveType : str = "f", steps : int = 1):
     state["renderView"] = "showBoard"
     playerX, playerY = state["playerData"]["position"]
     playerDirection = state["playerData"]["direction"]
@@ -799,7 +799,7 @@ def movePlayer(state : dict, arg : str = "f", steps : int = 1):
     playerDirectionIndex = directions.index(playerDirection)
     validMove = True
     moveShift = 0
-    arg = arg.lower()
+    arg = moveType.lower()
     if arg in ["f","for","forwards"]:
         moveShift = 0
     elif arg in ["b","back","backwards"]:
@@ -833,10 +833,10 @@ def movePlayer(state : dict, arg : str = "f", steps : int = 1):
             else:
                 wasLastMoveValid = False
 
-def equipItem(state : dict, arg):
+def equipItem(state : dict, slot : int):
     playerInvKeys = list(state["playerData"]["inventory"].keys())
-    if isinstance(arg, int):
-        index = arg - 1
+    if isinstance(slot, int):
+        index = slot - 1
         if 0 <= index < len(playerInvKeys):
             itemName = playerInvKeys[index]
             state["playerData"]["selectedItem"] = itemName
