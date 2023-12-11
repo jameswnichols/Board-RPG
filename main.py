@@ -373,7 +373,7 @@ def getDroppedItems(dropTable, rolls):
                 itemsDropped[item] = count
     
     return itemsDropped
-    #Formatted as {rolls: ROLLS, chanceData: [[(ITEM, COUNT), CHANCE]]}
+    #Formatted as {chanceData: [[(ITEM, COUNT), CHANCE]]}
 
 def generateDropTable(*itemDrops : list):
     dropDict = {"chanceData":[]}
@@ -847,7 +847,12 @@ def harvestTile(state, location):
     selectedItem = getPlayerSelected(state)
     if not objectData["harvestRequires"] or selectedItem in objectData["harvestRequires"]:
         rolls = getItemRolls(state, selectedItem)
-        print(rolls)
+        droppedItems = getDroppedItems(objectData["drops"], rolls)
+        for item, amount in droppedItems.items():
+            givePlayerItem(state, item, amount)
+        print(f"{rolls} :: {droppedItems}")
+        del state["objectData"][location]
+        
 
 def interactLookup(state : dict):
     state["renderView"] = "showBoard"
