@@ -853,7 +853,6 @@ def harvestTile(state, location):
             givePlayerItem(state, item, amount)
         print(f"{rolls} :: {droppedItems}")
         del state["objectData"][location]
-        
 
 def interactLookup(state : dict):
     state["renderView"] = "showBoard"
@@ -931,8 +930,8 @@ def generateState():
 
     generateItemData(state["itemData"])
 
-    # for item, data in state["itemData"].items():
-    #     givePlayerItem(state, item, 1000)
+    for item, data in state["itemData"].items():
+        givePlayerItem(state, item, 1000)
 
     generateMap(state)
 
