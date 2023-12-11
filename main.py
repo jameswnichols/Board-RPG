@@ -6,6 +6,7 @@ import os
 import inspect
 import ast
 import time
+import json
 
 #New village generation, pick a single point on the circle then for each subsequent point pick one of the points on that road and expand on it.
 #Each "spawn" has a random length for each of the 4 cardinal directions.
@@ -879,6 +880,9 @@ COMMANDS = {
     "equip" : equipItem,
     "select" : equipItem,
     "interact" : interactLookup,
+    "cut" : interactLookup,
+    "mine" : interactLookup,
+    "trade" : interactLookup
 }
 
 def generateItem(itemData, itemName : str, itemDamage : str, nullifyChance : int, randomRolls : int, description : str):
@@ -912,8 +916,8 @@ def generateState():
 
     generateItemData(state["itemData"])
 
-    for item, data in state["itemData"].items():
-        givePlayerItem(state, item, 1000)
+    # for item, data in state["itemData"].items():
+    #     givePlayerItem(state, item, 1000)
 
     generateMap(state)
 
@@ -925,8 +929,6 @@ if __name__ == "__main__":
     state = generateState()
 
     renderMap(state)
-
-    showTradeMenu(state,{"input":("Wood", 10), "output":("Gem", 1)})
 
     running = True
 
