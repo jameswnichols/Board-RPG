@@ -6,7 +6,7 @@ import os
 import inspect
 import ast
 import time
-import json
+import pickle
 
 #New village generation, pick a single point on the circle then for each subsequent point pick one of the points on that road and expand on it.
 #Each "spawn" has a random length for each of the 4 cardinal directions.
@@ -874,14 +874,16 @@ def interactLookup(state : dict):
 
 def saveGame(state : dict, filename : str):
     filename = filename+".sav"
-    with open(filename, "w") as f:
-        json.dump(state, f)
+    with open(filename, "wb") as f:
+        pickle.dump(state, f)
+    state["renderView"] = "showBoard"
 
 def loadGame(state : dict, filename : str):
     filename = filename+".sav"
-    with open(filename, "r") as f:
-        for key, val in json.load(f).items():
+    with open(filename, "rb") as f:
+        for key, val in pickle.load(f).items():
             state[key] = val
+    state["renderView"] = "showBoard"
 
 COMMANDS = {
     "show" : show,
