@@ -90,6 +90,8 @@ KNIGHT_AMOUNT = 100
 
 OGRE_AMOUNT = 50
 
+MAX_HEALTH_RENDER = 800
+
 def checkIfCirclesOverlap(centre1, radius1, centre2, radius2):
     distance = getLength(centre1, centre2)
     if distance <= radius1 - radius2 or distance <= radius2 - radius1:
@@ -510,11 +512,11 @@ def generateMap(state):
 
     generateEnemies(objectData, spawnLists["grass"], GOBLIN_AMOUNT, "♀", goblinDropTable, 30, 10,"Goblin")
 
-    generateEnemies(objectData, spawnLists["hills"], KNIGHT_AMOUNT, "♘", knightDropTable, 50, 20,"Knight")
+    generateEnemies(objectData, spawnLists["hills"], KNIGHT_AMOUNT, "♘", knightDropTable, 100, 20,"Knight")
 
-    generateEnemies(objectData, spawnLists["hills"], OGRE_AMOUNT//2, "♗", ogreDropTable, 100, 20,"Ogre")
+    generateEnemies(objectData, spawnLists["hills"], OGRE_AMOUNT//2, "♗", ogreDropTable, 150, 20,"Ogre")
 
-    generateEnemies(objectData, spawnLists["mountains"], OGRE_AMOUNT//2, "♗", ogreDropTable, 100, 20,"Ogre")
+    generateEnemies(objectData, spawnLists["mountains"], OGRE_AMOUNT//2, "♗", ogreDropTable, 150, 20,"Ogre")
 
     generateEnemies(objectData, [(MAP_WIDTH//2,MAP_HEIGHT//2)], 1, "♔", kingDropTable, 200, 50,"The King")
 
@@ -526,9 +528,9 @@ def generateMap(state):
 
     generateEnemies(objectData, [(spawnX, spawnY - 1)], 1, "♀", goblinDropTable, 30, 10,"Goblin")
 
-    generateEnemies(objectData, [(spawnX, spawnY - 2)], 1, "♘", knightDropTable, 50, 20,"Knight")
+    generateEnemies(objectData, [(spawnX, spawnY - 2)], 1, "♘", knightDropTable, 100, 20,"Knight")
 
-    generateEnemies(objectData, [(spawnX, spawnY - 3)], 1, "♗", ogreDropTable, 100, 20,"Ogre")
+    generateEnemies(objectData, [(spawnX, spawnY - 3)], 1, "♗", ogreDropTable, 150, 20,"Ogre")
 
     generateEnemies(objectData, [(spawnX, spawnY - 4)], 1, "♔", kingDropTable, 200, 50,"The King")
 
@@ -578,7 +580,7 @@ def getMapTile(mapData, objectData, position):
     return " "
 
 def generateHealthBar(health, maximumHealth):
-    playerHealth, maxHealth = health, maximumHealth
+    playerHealth, maxHealth = min(health,MAX_HEALTH_RENDER), min(maximumHealth,MAX_HEALTH_RENDER)
     playerHealth = math.floor(playerHealth / 10)
     maxHealth = math.ceil(maxHealth / 10)
     #emptyHearts = totalHearts - filledHearts
@@ -778,11 +780,8 @@ def fightEnemy(state : dict, location):
     enemyData = state["objectData"][location]
     enemyName = enemyData["name"]
     enemyDamage = enemyData["damage"]
-
     fightList = []
-
     fighting = True
-
     while fighting:
         fightScreen = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT))
 
@@ -790,7 +789,6 @@ def fightEnemy(state : dict, location):
         playerHealth, playerMaxHealth = state["playerData"]["health"], state["playerData"]["maximumHealth"]
 
         playerDamage = state["playerData"]["attackBonus"] + getItemDamage(state, state["playerData"]["selectedItem"])
-
         playerBlockChance = sum([getItemBlockChance(state, item) for item in list(state["playerData"]["inventory"].keys()) if playerHasItem(state, item)])
 
         print(playerDamage, playerBlockChance)
@@ -798,12 +796,14 @@ def fightEnemy(state : dict, location):
         writeTextToScreen(fightScreen,"Your Health:")
         enemyNameFormatted = f"{enemyName}'s Health:"
         writeTextToScreen(fightScreen,enemyNameFormatted,(SCREEN_WIDTH-len(enemyNameFormatted), 0))
+        for pi, bar in enumerate(generateHealthBar(playerHealth, playerMaxHealth)):
+            writeTextToScreen(fightScreen, bar, (0, 1 + pi))
+        for ei, bar in enumerate(generateHealthBar(enemyHealth, enemyMaxHealth)):
+            writeTextToScreen(fightScreen, bar, (SCREEN_WIDTH-len(bar), 1 + ei))
 
-        for i, bar in enumerate(generateHealthBar(playerHealth, playerMaxHealth)):
-            writeTextToScreen(fightScreen, bar, (0, 1 + i))
+        print(ei, pi)
 
-        for i, bar in enumerate(generateHealthBar(enemyHealth, enemyMaxHealth)):
-            writeTextToScreen(fightScreen, bar, (SCREEN_WIDTH-len(bar), 1 + i))
+        prevMoveSpace = 0
 
         clearConsole()
 
