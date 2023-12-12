@@ -776,6 +776,12 @@ def fightEnemy(state : dict, location):
         enemyHealth, enemyMaxHealth = enemyData["health"], enemyData["maximumHealth"]
         playerHealth, playerMaxHealth = state["playerData"]["health"], state["playerData"]["maximumHealth"]
 
+        playerDamage = state["playerData"]["attackBonus"] + getItemDamage(state, state["playerData"]["selectedItem"])
+
+        playerBlockChance = sum([getItemBlockChance(state, item) for item in list(state["playerData"]["inventory"].keys()) if playerHasItem(state, item)])
+
+        print(playerDamage, playerBlockChance)
+
         writeTextToScreen(fightScreen,"Your Health:")
         enemyNameFormatted = f"{enemyName}'s Health:"
         writeTextToScreen(fightScreen,enemyNameFormatted,(SCREEN_WIDTH-len(enemyNameFormatted), 0))
@@ -831,6 +837,12 @@ def playerHasItem(state : dict, itemName : str):
 
 def getAmountOfItem(state : dict, itemName : str):
     return 0 if not playerHasItem(state, itemName) else state["playerData"]["inventory"][itemName]
+
+def getItemDamage(state : dict, itemName : str):
+    return 0 if itemName not in state["itemData"] else state["itemData"][itemName]["itemDamage"]
+
+def getItemBlockChance(state : dict, itemName : str):
+    return 0 if itemName not in state["itemData"] else state["itemData"][itemName]["nullifyChance"]
 
 def givePlayerItem(state : dict, itemName : str, itemCount : int):
     if not playerHasItem(state, itemName):
@@ -1062,7 +1074,7 @@ def generateItemData(itemData : dict):
     generateItem(itemData, "Soldier's Sword", 50, 0, 1,"Does 5 x ♥.")
     generateItem(itemData, "Knight's Sword", 70, 0, 2,"Does 7 x ♥ and has 2 x drop rates.")
     generateItem(itemData, "Ogre Club", 70, 0.05, 1,"Does 7 x ♥ and has a 5% chance to block.")
-    generateItem(itemData, "King's Sword", 1000, 0, 5,"Does 100 x ♥ and has 5 x drop rates.")
+    generateItem(itemData, "King's Sword", 5000, 0, 5,"Does 500 x ♥ and has 5 x drop rates.")
     generateItem(itemData, "Goblin Shield", 0, 0.05, 1,"Has a 5% chance to block.")
     generateItem(itemData, "Soldier's Shield", 0, 0.10, 1,"Has a 10% chance to block.")
     generateItem(itemData, "Knight's Shield", 0, 0.20, 1,"Has a 20% chance to block.")
