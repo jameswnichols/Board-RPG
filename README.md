@@ -1,11 +1,11 @@
 # Board RPG
 A 2D randomly-generated game made for my Year 1 Semester 1 programming project.
 
-###Features:
+### Features:
 - Has an island map which changes each time you play.
 - Grindy and basic gameplay loop.
 
-###Commands (Optional args start with `+`'s and possible args are separated with `|`'s):
+### Commands (Optional args start with `+`'s and possible args are separated with `|`'s):
 - `show` > `board` | `inv / inventory`, `+page[1 -> ...]` | `help`, `+page[1 -> ...]`
 - `move` > `+f / for / forwards` | `+b / back / backwards` | `+l / left` | `+r / right`, `+steps[1 -> ...]`
 - `dir / face` > `n` | `ne` | `e` | `se` | `s` | `sw` | `w` | `nw`
@@ -16,7 +16,7 @@ A 2D randomly-generated game made for my Year 1 Semester 1 programming project.
 - `rendermap` > *Renders the map to a file called "map.txt".*
 - `giveall` > *CHEAT - Gives yourself 1000 of every item in the game*.
 
-###Restrictions:
+## Restrictions:
 - Only allowed to have one `main.py` file.
 - Not allowed to use `continue`, `break`, `class`, `global` or `pass`.
 - Not allowed `while` loops that don't have terminating conditions.
