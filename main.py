@@ -853,14 +853,17 @@ def fightEnemy(state : dict, location):
                 del state["objectData"][location]
                 fighting = False
             else:
-
-                newPlayerHealth = 0 if playerHealth - enemyDamage < 0 else playerHealth - enemyDamage
-                state["playerData"]["health"] = newPlayerHealth
-
-                fightList.append((f"{enemyName} hit you for {enemyDamage} x ♥","right"))
                 
-                if newPlayerHealth == 0:
-                    fighting = False
+                if randomChance(playerBlockChance, 1):
+                    fightList.append((f"{enemyName}'s attack blocked ({int(playerBlockChance * 100)}% Chance)","right"))
+                else:
+                    newPlayerHealth = 0 if playerHealth - enemyDamage < 0 else playerHealth - enemyDamage
+                    state["playerData"]["health"] = newPlayerHealth
+
+                    fightList.append((f"{enemyName} hit you for {enemyDamage} x ♥","right"))
+                    
+                    if newPlayerHealth == 0:
+                        fighting = False
             
         if userInput == "run":
             fighting = False
@@ -1163,7 +1166,7 @@ def generateItemData(itemData : dict):
     generateItem(itemData, "Med Kit", 0, 0, 1,"Heals you back to full health immediately.")
 
 def generateState():
-    state = {"running":True,"renderView":None,"page":1,"playerData":{"health":0,"maximumHealth":100,"baseMaximumHealth":100,"attackBonus":0,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Axe"},"mapData":{},"objectData":{},"islandMaskData":{},"itemData":{}}
+    state = {"running":True,"renderView":None,"page":1,"playerData":{"health":100,"maximumHealth":100,"baseMaximumHealth":100,"attackBonus":0,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Axe"},"mapData":{},"objectData":{},"islandMaskData":{},"itemData":{}}
 
     generateItemData(state["itemData"])
 
