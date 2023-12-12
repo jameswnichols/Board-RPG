@@ -775,7 +775,12 @@ def caughtErrorPage(state : dict, previousState : dict, ex : Exception):
     input()
 
 def validateFightInput(userInput : str):
-    pass
+    if userInput.lower() in ["a","attack"]:
+        return "attack"
+    elif userInput.lower() in ["r","run"]:
+        return "run"
+    else:
+        return "undef"
 
 def fightEnemy(state : dict, location):
     state["renderView"] = "showBoard"
@@ -827,7 +832,29 @@ def fightEnemy(state : dict, location):
 
         renderScreenToConsole(fightScreen)
 
-        userInput = input()
+        userInput = validateFightInput(input("> "))
+
+        if userInput == "attack":
+            
+            newEnemyHealth = 0 if enemyHealth - playerDamage < 0 else enemyHealth - playerDamage
+            state["objectData"][location]["health"] = newEnemyHealth
+
+            if newEnemyHealth == 0:
+
+                dropRolls = getItemRolls(state, getPlayerSelected(state))
+
+                enemyDrops = getDroppedItems(enemyData["drops"],dropRolls)
+
+                for item, amount in enemyDrops.items():
+                    givePlayerItem(state, item, amount)
+                    
+                del state["objectData"][location]
+                fighting = False
+
+            
+        if userInput == "run":
+            fighting = False
+            
     
 
 def renderMap(state):
