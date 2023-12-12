@@ -7,6 +7,7 @@ import inspect
 import ast
 import time
 import pickle
+import copy
 
 #New village generation, pick a single point on the circle then for each subsequent point pick one of the points on that road and expand on it.
 #Each "spawn" has a random length for each of the 4 cardinal directions.
@@ -264,7 +265,6 @@ def getRoadAdjecent(map, pos):
 
     return emptyPositions, tuple(adj)
 
-
 def islandRing(map, centre, radius, shiftMaxDistance, ringSize, threshold, tile, getValidPoints = False, validDistance = 0, validRadius = 0, pointDict = None, ringName = ""):
     circlePoints, smallestValue = generatePointsOnCircle(centre, radius, shiftMaxDistance)
     points = getPointsFromThreshold(circlePoints, smallestValue, threshold)
@@ -413,10 +413,10 @@ def generateObjects(objectData, possibleSpawns, spawnAmount, symbol, dropTable, 
         #print(f"Object : {symbol} Drops : {itemsChosen}")
         objectData[spawn] = {"objectType":"intTile","display":symbol,"drops":dropTable,"harvestRequires":harvestRequires}
 
-def generateEnemies(objectData, possibleSpawns, spawnAmount, symbol, dropTable, health, damage):
+def generateEnemies(objectData, possibleSpawns, spawnAmount, symbol, dropTable, health, damage, name):
     chosenSpawns = sampleWithRemove(possibleSpawns, spawnAmount)
     for spawn in chosenSpawns:
-        objectData[spawn] = {"objectType":"enemy","display":symbol,"drops":dropTable,"health":health,"maximumHealth":health,"damage":damage}
+        objectData[spawn] = {"objectType":"enemy","display":symbol,"drops":dropTable,"health":health,"maximumHealth":health,"damage":damage,"name":name}
 
 def generateVillagers(map, objectData, positions, amount, tradeTable):
     chosen = 0
@@ -505,15 +505,15 @@ def generateMap(state):
 
     generateObjects(objectData, spawnLists["mountains"], MOUNTAIN_ROCK_AMOUNT, "☁", moutainRockDropTable,["Pickaxe","Miner's Pickaxe"])
 
-    generateEnemies(objectData, spawnLists["grass"], GOBLIN_AMOUNT, "♀", goblinDropTable, 30, 10)
+    generateEnemies(objectData, spawnLists["grass"], GOBLIN_AMOUNT, "♀", goblinDropTable, 30, 10,"Goblin")
 
-    generateEnemies(objectData, spawnLists["hills"], KNIGHT_AMOUNT, "♘", knightDropTable, 50, 20)
+    generateEnemies(objectData, spawnLists["hills"], KNIGHT_AMOUNT, "♘", knightDropTable, 50, 20,"Knight")
 
-    generateEnemies(objectData, spawnLists["hills"], OGRE_AMOUNT//2, "♗", ogreDropTable, 100, 20)
+    generateEnemies(objectData, spawnLists["hills"], OGRE_AMOUNT//2, "♗", ogreDropTable, 100, 20,"Ogre")
 
-    generateEnemies(objectData, spawnLists["mountains"], OGRE_AMOUNT//2, "♗", ogreDropTable, 100, 20)
+    generateEnemies(objectData, spawnLists["mountains"], OGRE_AMOUNT//2, "♗", ogreDropTable, 100, 20,"Ogre")
 
-    generateEnemies(objectData, [(MAP_WIDTH//2,MAP_HEIGHT//2)], 1, "♔", kingDropTable, 200, 50)
+    generateEnemies(objectData, [(MAP_WIDTH//2,MAP_HEIGHT//2)], 1, "♔", kingDropTable, 200, 50,"The King")
 
     generateVillagers(map, objectData, villagerPositions, VILLAGER_AMOUNT, villagerTradeTable)
 
@@ -734,6 +734,19 @@ def showTradeMenu(state : dict, trade : dict):
             removePlayerItem(state, inputItemName, inputItemCount)
             givePlayerItem(state, outputItemName, outputItemCount)
             return
+
+def caughtErrorPage(state : dict, previousState : dict, ex : Exception):
+    errorPage = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT))
+    errorName = type(ex).__name__
+
+    writeTextToScreen(errorPage,"A fatal error has been occured!")
+
+    clearConsole()
+
+    renderScreenToConsole(errorPage)
+
+    input()
+
 
 def renderMap(state):
     mapData = state["mapData"]
@@ -1021,13 +1034,18 @@ if __name__ == "__main__":
 
     while running:
 
-        clearConsole()
+        previousState = copy.deepcopy(state)
 
-        renderView(state)
+        try:
+            clearConsole()
 
-        playerCommand = input("Command > ")
+            renderView(state)
 
-        parseCommand(playerCommand)
+            playerCommand = input("Command > ")
+
+            parseCommand(playerCommand)
+        except Exception as e:
+            caughtErrorPage(state, previousState, e)
 
         #ABSOLUTELY HORRIBLE PRACTICE
         SCREEN_WIDTH, SCREEN_HEIGHT = os.get_terminal_size()
