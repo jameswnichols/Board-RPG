@@ -82,6 +82,12 @@ HILL_ROCK_AMOUNT = 20
 
 MOUNTAIN_ROCK_AMOUNT = 100
 
+GOBLIN_AMOUNT = 500
+
+KNIGHT_AMOUNT = 100
+
+OGRE_AMOUNT = 50
+
 def checkIfCirclesOverlap(centre1, radius1, centre2, radius2):
     distance = getLength(centre1, centre2)
     if distance <= radius1 - radius2 or distance <= radius2 - radius1:
@@ -407,6 +413,11 @@ def generateObjects(objectData, possibleSpawns, spawnAmount, symbol, dropTable, 
         #print(f"Object : {symbol} Drops : {itemsChosen}")
         objectData[spawn] = {"objectType":"intTile","display":symbol,"drops":dropTable,"harvestRequires":harvestRequires}
 
+def generateEnemies(objectData, possibleSpawns, spawnAmount, symbol, dropTable, health, damage):
+    chosenSpawns = sampleWithRemove(possibleSpawns, spawnAmount)
+    for spawn in chosenSpawns:
+        objectData[spawn] = {"objectType":"enemy","display":symbol,"drops":dropTable,"health":health,"maximumHealth":health,"damage":damage}
+
 def generateVillagers(map, objectData, positions, amount, tradeTable):
     chosen = 0
     while chosen < amount:
@@ -493,6 +504,16 @@ def generateMap(state):
     generateObjects(objectData, spawnLists["innerHills"], HILL_ROCK_AMOUNT, "☁", rockDropTable,["Pickaxe","Miner's Pickaxe"])
 
     generateObjects(objectData, spawnLists["mountains"], MOUNTAIN_ROCK_AMOUNT, "☁", moutainRockDropTable,["Pickaxe","Miner's Pickaxe"])
+
+    generateEnemies(objectData, spawnLists["grass"], GOBLIN_AMOUNT, "♀", goblinDropTable, 30, 10)
+
+    generateEnemies(objectData, spawnLists["hills"], KNIGHT_AMOUNT, "♘", knightDropTable, 50, 20)
+
+    generateEnemies(objectData, spawnLists["hills"], OGRE_AMOUNT//2, "ꆜ", ogreDropTable, 100, 20)
+
+    generateEnemies(objectData, spawnLists["mountains"], OGRE_AMOUNT//2, "ꆜ", ogreDropTable, 100, 20)
+
+    generateEnemies(objectData, [(MAP_WIDTH//2,MAP_HEIGHT//2)], 1, "♔", kingDropTable, 200, 50)
 
     generateVillagers(map, objectData, villagerPositions, VILLAGER_AMOUNT, villagerTradeTable)
 
