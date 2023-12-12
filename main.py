@@ -564,8 +564,8 @@ def getMapTile(mapData, objectData, position):
         return mapData[position]
     return " "
 
-def generatePlayerHealthBar(playerData):
-    playerHealth, maxHealth = playerData["health"], playerData["maximumHealth"]
+def generateHealthBar(health, maximumHealth):
+    playerHealth, maxHealth = health, maximumHealth
     playerHealth = math.floor(playerHealth / 10)
     maxHealth = math.ceil(maxHealth / 10)
     #emptyHearts = totalHearts - filledHearts
@@ -603,8 +603,7 @@ def show_board(state):
 
             writeTextToScreen(board, character, (boardX, boardY))
     
-
-    healthBarLines = generatePlayerHealthBar(playerData)
+    healthBarLines = generateHealthBar(playerData["health"], playerData["maximumHealth"])
 
     for i, line in enumerate(healthBarLines):
         writeTextToScreen(board, line,(0, i))
@@ -760,6 +759,39 @@ def caughtErrorPage(state : dict, previousState : dict, ex : Exception):
     renderScreenToConsole(errorPage)
     input()
 
+def fightEnemy(state : dict, location):
+    state["renderView"] = "showBoard"
+    #{"objectType":"enemy","display":symbol,"drops":dropTable,"health":health,"maximumHealth":health,"damage":damage,"name":name
+    enemyData = state["objectData"][location]
+    enemyName = enemyData["name"]
+    enemyDamage = enemyData["damage"]
+
+    fightList = []
+
+    fighting = True
+
+    while fighting:
+        fightScreen = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT))
+
+        enemyHealth, enemyMaxHealth = enemyData["health"], enemyData["maximumHealth"]
+        playerHealth, playerMaxHealth = state["playerData"]["health"], state["playerData"]["maximumHealth"]
+
+        writeTextToScreen(fightScreen,"Your Health:")
+        enemyNameFormatted = f"{enemyName}'s Health:"
+        writeTextToScreen(fightScreen,enemyNameFormatted,(SCREEN_WIDTH-len(enemyNameFormatted), 0))
+
+        for i, bar in enumerate(generateHealthBar(playerHealth, playerMaxHealth)):
+            writeTextToScreen(fightScreen, bar, (0, 1 + i))
+
+        for i, bar in enumerate(generateHealthBar(enemyHealth, enemyMaxHealth)):
+            writeTextToScreen(fightScreen, bar, (SCREEN_WIDTH-len(bar), 1 + i))
+
+        clearConsole()
+
+        renderScreenToConsole(fightScreen)
+
+        input()
+    
 
 def renderMap(state):
     mapData = state["mapData"]
@@ -968,6 +1000,8 @@ def interactLookup(state : dict):
         showTradeMenu(state, objectAt["trade"])
     elif objectType == "intTile":
         harvestTile(state, interactLocation)
+    elif objectType == "enemy":
+        fightEnemy(state, interactLocation)
 
 def overwriteState(state : dict, newState : dict):
     for key, value in newState.items():
