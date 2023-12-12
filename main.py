@@ -742,7 +742,7 @@ def caughtErrorPage(state : dict, previousState : dict, ex : Exception):
     errorTrace = traceback.TracebackException.from_exception(ex).format()
     print(errorTrace)
 
-    writeTextToScreen(errorPage,"A fatal error has been occured!")
+    writeTextToScreen(errorPage,"A fatal error has occured!")
 
     clearConsole()
 
@@ -830,8 +830,8 @@ def convertArgs(argList : list):
 
 def parseCommand(command : str):
     splitCommand = command.strip().split()
-    if not splitCommand:
-        return
+    # if not splitCommand:
+    #     return
     command = splitCommand[0].lower()
     args = convertArgs(splitCommand[1:])
     if command in COMMANDS:
