@@ -974,12 +974,16 @@ def overwriteState(state : dict, newState : dict):
         state[key] = value
 
 def saveGame(state : dict, filename : str):
+    if not filename:
+        return
     filename = filename+".sav"
     with open(filename, "wb") as f:
         pickle.dump(state, f)
     state["renderView"] = "showBoard"
 
 def loadGame(state : dict, filename : str):
+    if not filename:
+        return
     filename = filename+".sav"
     with open(filename, "rb") as f:
         for key, val in pickle.load(f).items():
