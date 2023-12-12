@@ -840,8 +840,8 @@ def convertArgs(argList : list):
 
 def parseCommand(command : str):
     splitCommand = command.strip().split()
-    # if not splitCommand:
-    #     return
+    if not splitCommand:
+        return
     command = splitCommand[0].lower()
     args = convertArgs(splitCommand[1:])
     if command in COMMANDS:
