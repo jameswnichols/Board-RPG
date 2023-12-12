@@ -473,6 +473,7 @@ def generateMap(state):
                                             [("Gem", 2), ("Skill Fragment", 1), 50],
                                             [("Gem", 15), ("Snow Boots", 1), 50],
                                             [("Gem", 30), ("Ice Picks", 1), 30],
+                                            [("Gem", 1), ("Med Kit", 1), 50]
                                             [("Skill Fragment", 10), ("Health Up Orb",1),30],
                                             [("Skill Fragment", 10), ("Attack Up Orb",1),30],
                                             [("Gem", 10), ("Soldier's Sword", 1), 30],
@@ -759,11 +760,20 @@ def removePlayerItem(state : dict, itemName : str, itemCount : int):
         state["playerData"]["inventory"][itemName] = amountLeftOver
     updatePlayerOrbs(state)
 
+def deletePlayerItem(state : dict, itemName : str):
+    if playerHasItem(state, itemName):
+        del state["playerData"]["inventory"][itemName]
+
 def updatePlayerOrbs(state):
     baseHealth = state["playerData"]["baseMaximumHealth"]
     newMaximumHealth = baseHealth + getAmountOfItem(state, "Health Up Orb") * 10
     state["playerData"]["maximumHealth"] = newMaximumHealth
     state["playerData"]["attackBonus"] = getAmountOfItem(state, "Attack Up Orb")
+
+    if getAmountOfItem(state, "Med Kit") > 0:
+        state["playerData"]["health"] = state["playerData"]["maximumHealth"]
+        deletePlayerItem(state,"Med Kit")
+
 
 def convertArgs(argList : list):
     convertedList = []
@@ -958,14 +968,15 @@ def generateItemData(itemData : dict):
     generateItem(itemData, "Goblin Club", 10, 0, 1,"Does 1 x ♥.")
     generateItem(itemData, "Soldier's Sword", 15, 0, 1,"Does 1.5 x ♥.")
     generateItem(itemData, "Knight's Sword", 30, 0, 2,"Does 3 x ♥ and has 2 x drop rates.")
-    generateItem(itemData, "Ogre Club", 20, 5, 1,"Does 2 x ♥ and has a 5% chance to block.")
+    generateItem(itemData, "Ogre Club", 20, 0.05, 1,"Does 2 x ♥ and has a 5% chance to block.")
     generateItem(itemData, "King's Sword", 1000, 0, 5,"Does 100 x ♥ and has 5 x drop rates.")
-    generateItem(itemData, "Goblin Shield", 0, 5, 1,"Has a 5% chance to block.")
-    generateItem(itemData, "Soldier's Shield", 0, 10, 1,"Has a 10% chance to block.")
-    generateItem(itemData, "Knight's Shield", 0, 20, 1,"Has a 20% chance to block.")
-    generateItem(itemData, "King's Shield", 0, 100, 1,"Blocks all attacks.")
+    generateItem(itemData, "Goblin Shield", 0, 0.05, 1,"Has a 5% chance to block.")
+    generateItem(itemData, "Soldier's Shield", 0, 0.10, 1,"Has a 10% chance to block.")
+    generateItem(itemData, "Knight's Shield", 0, 0.20, 1,"Has a 20% chance to block.")
+    generateItem(itemData, "King's Shield", 0, 1, 1,"Blocks all attacks.")
     generateItem(itemData, "Snow Boots", 0, 0, 1,"Needed to traverse hill tiles.")
     generateItem(itemData, "Ice Picks", 0, 0, 1,"Needed to climb mountain tiles.")
+    generateItem(itemData, "Med Kit", 0, 0, 1,"Heals you back to full health immediately.")
 
 def generateState():
     state = {"renderView":None,"page":1,"playerData":{"health":500,"maximumHealth":100,"baseMaximumHealth":100,"attackBonus":0,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Axe"},"mapData":{},"objectData":{},"islandMaskData":{},"itemData":{}}
