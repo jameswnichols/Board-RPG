@@ -473,7 +473,7 @@ def generateMap(state):
                                             [("Gem", 2), ("Skill Fragment", 1), 50],
                                             [("Gem", 15), ("Snow Boots", 1), 50],
                                             [("Gem", 30), ("Ice Picks", 1), 30],
-                                            [("Gem", 1), ("Med Kit", 1), 50]
+                                            [("Gem", 1), ("Med Kit", 1), 50],
                                             [("Skill Fragment", 10), ("Health Up Orb",1),30],
                                             [("Skill Fragment", 10), ("Attack Up Orb",1),30],
                                             [("Gem", 10), ("Soldier's Sword", 1), 30],
