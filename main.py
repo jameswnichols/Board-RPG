@@ -869,6 +869,14 @@ def isPlayerDead(state : dict):
     if not state["playerData"]["health"] == 0:
         return
     state["running"] = False
+    deathScreen = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT))
+    deathText = "You Died :("
+    deathTextX = SCREEN_WIDTH // 2 - (len(deathText)//2)
+    writeTextToScreen(deathScreen, deathText,(deathTextX,(SCREEN_HEIGHT-1) // 2))
+    writeTextToScreen(deathScreen,"Press Return to Exit:",(0, SCREEN_HEIGHT - 1))
+    clearConsole()
+    renderScreenToConsole(deathScreen)
+    input("> ")
 
 def renderMap(state):
     mapData = state["mapData"]
@@ -1155,7 +1163,7 @@ def generateItemData(itemData : dict):
     generateItem(itemData, "Med Kit", 0, 0, 1,"Heals you back to full health immediately.")
 
 def generateState():
-    state = {"running":True,"renderView":None,"page":1,"playerData":{"health":100,"maximumHealth":100,"baseMaximumHealth":100,"attackBonus":0,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Axe"},"mapData":{},"objectData":{},"islandMaskData":{},"itemData":{}}
+    state = {"running":True,"renderView":None,"page":1,"playerData":{"health":0,"maximumHealth":100,"baseMaximumHealth":100,"attackBonus":0,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Axe"},"mapData":{},"objectData":{},"islandMaskData":{},"itemData":{}}
 
     generateItemData(state["itemData"])
 
@@ -1167,21 +1175,13 @@ if __name__ == "__main__":
     state = generateState()
 
     while state["running"]:
-
         previousState = copy.deepcopy(state)
-
         try:
-
             isPlayerDead(state)
-
             if state["running"]:
-
                 clearConsole()
-
                 renderView(state)
-
                 playerCommand = input("Command > ")
-
                 parseCommand(playerCommand)
         except Exception as e:
             caughtErrorPage(state, previousState, e)
