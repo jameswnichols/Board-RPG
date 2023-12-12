@@ -422,7 +422,10 @@ def generateEnemies(objectData, possibleSpawns, spawnAmount, symbol, dropTable, 
 def generateVillagers(map, objectData, positions, amount, tradeTable):
     chosen = 0
     while chosen < amount:
-        chosenPosition = sampleWithRemove(positions, 1)[0]
+        chosenPosition = sampleWithRemove(positions, 1)
+        if not chosenPosition:
+            return
+        chosenPosition = chosenPosition[0]
         #If space isnt occupied and space isnt a road
         if chosenPosition not in objectData and map[chosenPosition] not in list(POSSIBLE_COMBOS.values()):
             chosenTrade = pickTrade(tradeTable)
