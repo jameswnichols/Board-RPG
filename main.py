@@ -8,6 +8,7 @@ import ast
 import time
 import pickle
 import copy
+import traceback
 
 #New village generation, pick a single point on the circle then for each subsequent point pick one of the points on that road and expand on it.
 #Each "spawn" has a random length for each of the 4 cardinal directions.
@@ -738,6 +739,8 @@ def showTradeMenu(state : dict, trade : dict):
 def caughtErrorPage(state : dict, previousState : dict, ex : Exception):
     errorPage = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT))
     errorName = type(ex).__name__
+    errorTrace = traceback.TracebackException.from_exception(ex).format()
+    print(errorTrace)
 
     writeTextToScreen(errorPage,"A fatal error has been occured!")
 
