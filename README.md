@@ -5,7 +5,8 @@ A 2D randomly-generated game made for my Year 1 Semester 1 programming project.
 - Has an island map which changes each time you play.
 - Grindy and basic gameplay loop.
 
-### Commands (Optional args start with `+`'s and possible args are separated with `|`'s):
+### Commands:
+(Optional args start with `+`'s and possible args are separated with `|`'s)
 - `show` > `board` | `inv / inventory`, `+page[1 -> ...]` | `help`, `+page[1 -> ...]`
 - `move` > `+f / for / forwards` | `+b / back / backwards` | `+l / left` | `+r / right`, `+steps[1 -> ...]`
 - `dir / face` > `n` | `ne` | `e` | `se` | `s` | `sw` | `w` | `nw`
