@@ -509,9 +509,9 @@ def generateMap(state):
 
     generateEnemies(objectData, spawnLists["hills"], KNIGHT_AMOUNT, "♘", knightDropTable, 50, 20)
 
-    generateEnemies(objectData, spawnLists["hills"], OGRE_AMOUNT//2, "ꆜ", ogreDropTable, 100, 20)
+    generateEnemies(objectData, spawnLists["hills"], OGRE_AMOUNT//2, "♗", ogreDropTable, 100, 20)
 
-    generateEnemies(objectData, spawnLists["mountains"], OGRE_AMOUNT//2, "ꆜ", ogreDropTable, 100, 20)
+    generateEnemies(objectData, spawnLists["mountains"], OGRE_AMOUNT//2, "♗", ogreDropTable, 100, 20)
 
     generateEnemies(objectData, [(MAP_WIDTH//2,MAP_HEIGHT//2)], 1, "♔", kingDropTable, 200, 50)
 
@@ -1006,7 +1006,7 @@ def generateItemData(itemData : dict):
     generateItem(itemData, "Med Kit", 0, 0, 1,"Heals you back to full health immediately.")
 
 def generateState():
-    state = {"renderView":None,"page":1,"playerData":{"health":50,"maximumHealth":100,"baseMaximumHealth":100,"attackBonus":0,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Axe"},"mapData":{},"objectData":{},"islandMaskData":{},"itemData":{}}
+    state = {"renderView":None,"page":1,"playerData":{"health":100,"maximumHealth":100,"baseMaximumHealth":100,"attackBonus":0,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Axe"},"mapData":{},"objectData":{},"islandMaskData":{},"itemData":{}}
 
     generateItemData(state["itemData"])
 
