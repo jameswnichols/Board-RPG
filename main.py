@@ -660,6 +660,8 @@ def showHelp(state : dict):
         if commandArgs:
             writeTextToScreen(helpScreen, f"↳ {argsPretty}", (2, 2 + 3 * (i-startIndex)))
 
+    writeTextToScreen(helpScreen,"https://github.com/jameswnichols/Board-RPG#commands",(0, SCREEN_HEIGHT-1))
+
     renderScreenToConsole(helpScreen)
 
 def validateTradeInput(inp : str):
