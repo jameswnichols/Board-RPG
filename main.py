@@ -986,8 +986,7 @@ def loadGame(state : dict, filename : str):
         return
     filename = filename+".sav"
     with open(filename, "rb") as f:
-        for key, val in pickle.load(f).items():
-            state[key] = val
+        overwriteState(state, pickle.load(f))
     state["renderView"] = "showBoard"
 
 def giveAllItems(state : dict):
