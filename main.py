@@ -462,9 +462,14 @@ def generateMap(state):
     spawnLists = getSpawnLocations(map, objectData, spawningPoints)
 
     #Generate Interactable Tiles
-    woodDropTable = generateDropTable([("Wood", 1), 1], [("Wood", 1), 0.5], [("Wood", 1), 0.25])
-    rockDropTable = generateDropTable([("Stone", 1), 1], [("Stone", 1), 0.5], [("Stone", 1), 0.25], [("Gem", 1), 0.1], [("Gem", 1), 0.05])
-    moutainRockDropTable = generateDropTable([("Stone", 1), 1], [("Stone", 1), 0.5], [("Stone", 1), 0.25], [("Gem", 1), 0.5], [("Gem", 1), 0.25], [("Gem", 1), 0.125])
+    woodDropTable = generateDropTable([("Wood", 1), 1], [("Wood", 1), 0.5], [("Wood", 1), 0.5])
+    rockDropTable = generateDropTable([("Stone", 1), 1], [("Stone", 1), 0.5], [("Stone", 1), 0.5], [("Gem", 1), 0.1], [("Gem", 1), 0.05])
+    moutainRockDropTable = generateDropTable([("Stone", 1), 1], [("Stone", 1), 0.5], [("Stone", 1), 0.5], [("Gem", 1), 0.5], [("Gem", 1), 0.25], [("Gem", 1), 0.125])
+
+    goblinDropTable = generateDropTable([("Wood", 1), 1], [("Wood", 1), 0.5], [("Skill Fragment", 2), 1], [("Skill Fragment", 1), 0.5], [("Skill Fragment", 1), 0.5], [("Goblin Club", 1), 0.1], [("Goblin Shield", 1), 0.05], [("Snow Boots", 1), 0.01])
+    knightDropTable = generateDropTable([("Stone", 1), 1], [("Stone", 1), 0.5], [("Skill Fragment", 4), 1], [("Skill Fragment", 2), 0.5], [("Skill Fragment", 2), 0.5], [("Knight's Sword", 1), 0.1], [("Knight's Shield", 1), 0.05], [("Ice Picks", 1), 0.01])
+    ogreDropTable = generateDropTable([("Skill Fragment", 5), 1], [("Skill Fragment", 3), 0.5], [("Skill Fragment", 2), 0.5],[("Gem", 2), 1], [("Gem", 1), 0.5], [("Gem", 1), 0.5], [("Ogre Club", 1), 1])
+    kingDropTable = generateDropTable([("Health Up Orb", 1), 1], [("Health Up Orb", 1), 0.5], [("Health Up Orb", 1), 0.5], [("Attack Up Orb", 1), 1], [("Attack Up Orb", 1), 0.5], [("Attack Up Orb", 1), 0.5], [("King's Sword", 1), 1], [("King's Shield", 1), 1])
 
     villagerTradeTable = generateTradeTable([("Wood", 10), ("Gem", 1), None],
                                             [("Stone", 10), ("Gem", 1), None],
@@ -776,7 +781,6 @@ def updatePlayerOrbs(state):
         state["playerData"]["health"] = state["playerData"]["maximumHealth"]
         deletePlayerItem(state,"Med Kit")
 
-
 def convertArgs(argList : list):
     convertedList = []
     for arg in argList:
@@ -957,20 +961,20 @@ def generateItem(itemData, itemName : str, itemDamage : str, nullifyChance : int
     itemData[itemName] = {"itemDamage":itemDamage,"nullifyChance":nullifyChance,"randomRolls":randomRolls,"description":description}
 
 def generateItemData(itemData : dict):
-    generateItem(itemData, "Axe", 5, 0, 1,"Can cut trees and does 0.5 x ♥.")
-    generateItem(itemData, "Lumber Axe", 15, 0, 2, "Can cut trees, does 1.5 x ♥ and has 2 x drop rates.")
+    generateItem(itemData, "Axe", 5, 0, 1,"Can cut trees and does 1 x ♥.")
+    generateItem(itemData, "Lumber Axe", 15, 0, 2, "Can cut trees, does 3 x ♥ and has 2 x drop rates.")
     generateItem(itemData, "Wood", 0, 0, 1, "A Common resource that's useful for trading.")
     generateItem(itemData, "Stone", 0, 0, 1, "A tough material that's useful for trading.")
     generateItem(itemData, "Gem", 0, 0, 1, "A rare gem that's valuable to Villagers.")
     generateItem(itemData, "Skill Fragment", 0, 0, 1,"Collect 10 to convert their energy via trading.")
     generateItem(itemData, "Health Up Orb", 0, 0, 1,"Increases your maximum health by 1 x ♥.")
     generateItem(itemData, "Attack Up Orb", 0, 0, 1,"Increases your damage by 1 x ♥.")
-    generateItem(itemData, "Pickaxe", 5, 0, 1,"Can break rocks and does 0.5 x ♥.")
+    generateItem(itemData, "Pickaxe", 5, 0, 1,"Can break rocks and does 1 x ♥.")
     generateItem(itemData, "Miner's Pickaxe", 5, 0, 2,"Can break rocks and has 2 x drop rates.")
-    generateItem(itemData, "Goblin Club", 10, 0, 1,"Does 1 x ♥.")
-    generateItem(itemData, "Soldier's Sword", 15, 0, 1,"Does 1.5 x ♥.")
-    generateItem(itemData, "Knight's Sword", 30, 0, 2,"Does 3 x ♥ and has 2 x drop rates.")
-    generateItem(itemData, "Ogre Club", 20, 0.05, 1,"Does 2 x ♥ and has a 5% chance to block.")
+    generateItem(itemData, "Goblin Club", 10, 0, 1,"Does 3 x ♥.")
+    generateItem(itemData, "Soldier's Sword", 15, 0, 1,"Does 5 x ♥.")
+    generateItem(itemData, "Knight's Sword", 30, 0, 2,"Does 7 x ♥ and has 2 x drop rates.")
+    generateItem(itemData, "Ogre Club", 20, 0.05, 1,"Does 7 x ♥ and has a 5% chance to block.")
     generateItem(itemData, "King's Sword", 1000, 0, 5,"Does 100 x ♥ and has 5 x drop rates.")
     generateItem(itemData, "Goblin Shield", 0, 0.05, 1,"Has a 5% chance to block.")
     generateItem(itemData, "Soldier's Shield", 0, 0.10, 1,"Has a 10% chance to block.")
@@ -981,7 +985,7 @@ def generateItemData(itemData : dict):
     generateItem(itemData, "Med Kit", 0, 0, 1,"Heals you back to full health immediately.")
 
 def generateState():
-    state = {"renderView":None,"page":1,"playerData":{"health":500,"maximumHealth":100,"baseMaximumHealth":100,"attackBonus":0,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Axe"},"mapData":{},"objectData":{},"islandMaskData":{},"itemData":{}}
+    state = {"renderView":None,"page":1,"playerData":{"health":50,"maximumHealth":100,"baseMaximumHealth":100,"attackBonus":0,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Axe"},"mapData":{},"objectData":{},"islandMaskData":{},"itemData":{}}
 
     generateItemData(state["itemData"])
 
