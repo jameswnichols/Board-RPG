@@ -367,7 +367,7 @@ def sampleWithRemove(possibleItems, amount):
 def randomChance(chance, rolls):
     chanceLanded = False
     for r in range(rolls):
-        if random.random() <= chance:
+        if random.random() <= chance and chance != 0:
             chanceLanded = True
     return chanceLanded
 
@@ -774,13 +774,16 @@ def caughtErrorPage(state : dict, previousState : dict, ex : Exception):
     renderScreenToConsole(errorPage)
     input()
 
+def validateFightInput(userInput : str):
+    pass
+
 def fightEnemy(state : dict, location):
     state["renderView"] = "showBoard"
     #{"objectType":"enemy","display":symbol,"drops":dropTable,"health":health,"maximumHealth":health,"damage":damage,"name":name
     enemyData = state["objectData"][location]
     enemyName = enemyData["name"]
     enemyDamage = enemyData["damage"]
-    fightList = []
+    fightList = [(str(i),"left") for i in range(0, 20)]
     fighting = True
     while fighting:
         fightScreen = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -791,8 +794,6 @@ def fightEnemy(state : dict, location):
         playerDamage = state["playerData"]["attackBonus"] + getItemDamage(state, state["playerData"]["selectedItem"])
         playerBlockChance = sum([getItemBlockChance(state, item) for item in list(state["playerData"]["inventory"].keys()) if playerHasItem(state, item)])
 
-        print(playerDamage, playerBlockChance)
-
         writeTextToScreen(fightScreen,"Your Health:")
         enemyNameFormatted = f"{enemyName}'s Health:"
         writeTextToScreen(fightScreen,enemyNameFormatted,(SCREEN_WIDTH-len(enemyNameFormatted), 0))
@@ -801,15 +802,32 @@ def fightEnemy(state : dict, location):
         for ei, bar in enumerate(generateHealthBar(enemyHealth, enemyMaxHealth)):
             writeTextToScreen(fightScreen, bar, (SCREEN_WIDTH-len(bar), 1 + ei))
 
-        print(ei, pi)
+        bottomOfHealth = (max(max(ei, pi), 1) + 2)
 
-        prevMoveSpace = 0
+        prevMoveSpace = (SCREEN_HEIGHT - 1 ) - bottomOfHealth
+
+        amountOfPreviousMoves = prevMoveSpace // 2
+
+        startIndex = 0
+
+        if len(fightList) > amountOfPreviousMoves:
+            startIndex = len(fightList) - amountOfPreviousMoves
+
+        for attackIndex in range(startIndex, len(fightList)):
+            attackText, side = fightList[attackIndex]
+            actualY = bottomOfHealth + ((attackIndex - startIndex) * 2)
+            if side == "left":
+                writeTextToScreen(fightScreen, attackText, (0, actualY))
+            else:
+                writeTextToScreen(fightScreen, attackText, (SCREEN_WIDTH-len(attackText), actualY))
+
+        writeTextToScreen(fightScreen, f"(A) to Attack for {playerDamage//10} x ♥ / (R) to Run",(0, SCREEN_HEIGHT - 1))
 
         clearConsole()
 
         renderScreenToConsole(fightScreen)
 
-        input()
+        userInput = input()
     
 
 def renderMap(state):
