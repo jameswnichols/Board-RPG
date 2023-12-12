@@ -423,7 +423,6 @@ def generateVillagers(map, objectData, positions, amount, tradeTable):
     chosen = 0
     while chosen < amount:
         chosenPosition = sampleWithRemove(positions, 1)[0]
-        print(chosenPosition)
         #If space isnt occupied and space isnt a road
         if chosenPosition not in objectData and map[chosenPosition] not in list(POSSIBLE_COMBOS.values()):
             chosenTrade = pickTrade(tradeTable)
@@ -739,15 +738,26 @@ def showTradeMenu(state : dict, trade : dict):
 def caughtErrorPage(state : dict, previousState : dict, ex : Exception):
     errorPage = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT))
     errorName = type(ex).__name__
-    errorTrace = traceback.TracebackException.from_exception(ex).format()
-    print(errorTrace)
-
-    writeTextToScreen(errorPage,"A fatal error has occured!")
-
+    errorTraceList = []
+    for error in list(traceback.TracebackException.from_exception(ex).format()):
+        errorTraceList.extend(error.split("\n"))
+    errorTraceList = [x.strip() for x in errorTraceList if x]
+    writeTextToScreen(errorPage,"A fatal error has occured:")
+    startPositionX, startPositionY = 0, 2
+    for trace in errorTraceList:
+        startPositionX = 0
+        for char in trace:
+            writeTextToScreen(errorPage, char, (startPositionX,startPositionY))
+            startPositionX += 1
+            if startPositionX == SCREEN_WIDTH:
+                startPositionX = 0
+                startPositionY += 1
+        startPositionY += 1
+    overwriteState(state, previousState)
+    writeTextToScreen(errorPage,"Previous state has been restored!",(0, startPositionY + 1))
+    writeTextToScreen(errorPage,"Press Return to continue:",(0, SCREEN_HEIGHT-1))
     clearConsole()
-
     renderScreenToConsole(errorPage)
-
     input()
 
 
@@ -940,7 +950,6 @@ def harvestTile(state, location):
         droppedItems = getDroppedItems(objectData["drops"], rolls)
         for item, amount in droppedItems.items():
             givePlayerItem(state, item, amount)
-        print(f"{rolls} :: {droppedItems}")
         del state["objectData"][location]
 
 def interactLookup(state : dict):
@@ -959,6 +968,10 @@ def interactLookup(state : dict):
         showTradeMenu(state, objectAt["trade"])
     elif objectType == "intTile":
         harvestTile(state, interactLocation)
+
+def overwriteState(state : dict, newState : dict):
+    for key, value in newState.items():
+        state[key] = value
 
 def saveGame(state : dict, filename : str):
     filename = filename+".sav"
