@@ -788,7 +788,7 @@ def fightEnemy(state : dict, location):
     enemyData = state["objectData"][location]
     enemyName = enemyData["name"]
     enemyDamage = enemyData["damage"]
-    fightList = [(str(i),"left") for i in range(0, 20)]
+    fightList = []
     fighting = True
     while fighting:
         fightScreen = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -839,6 +839,8 @@ def fightEnemy(state : dict, location):
             newEnemyHealth = 0 if enemyHealth - playerDamage < 0 else enemyHealth - playerDamage
             state["objectData"][location]["health"] = newEnemyHealth
 
+            fightList.append((f"Hit {enemyName} for {playerDamage} x ♥","left"))
+
             if newEnemyHealth == 0:
 
                 dropRolls = getItemRolls(state, getPlayerSelected(state))
@@ -847,15 +849,26 @@ def fightEnemy(state : dict, location):
 
                 for item, amount in enemyDrops.items():
                     givePlayerItem(state, item, amount)
-                    
+
                 del state["objectData"][location]
                 fighting = False
+            else:
 
+                newPlayerHealth = 0 if playerHealth - enemyDamage < 0 else playerHealth - enemyDamage
+                state["playerData"]["health"] = newPlayerHealth
+
+                fightList.append((f"{enemyName} hit you for {enemyDamage} x ♥","right"))
+                
+                if newPlayerHealth == 0:
+                    fighting = False
             
         if userInput == "run":
             fighting = False
-            
-    
+
+def isPlayerDead(state : dict):
+    if not state["playerData"]["health"] == 0:
+        return
+    state["running"] = False
 
 def renderMap(state):
     mapData = state["mapData"]
@@ -1142,7 +1155,7 @@ def generateItemData(itemData : dict):
     generateItem(itemData, "Med Kit", 0, 0, 1,"Heals you back to full health immediately.")
 
 def generateState():
-    state = {"renderView":None,"page":1,"playerData":{"health":100,"maximumHealth":100,"baseMaximumHealth":100,"attackBonus":0,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Axe"},"mapData":{},"objectData":{},"islandMaskData":{},"itemData":{}}
+    state = {"running":True,"renderView":None,"page":1,"playerData":{"health":100,"maximumHealth":100,"baseMaximumHealth":100,"attackBonus":0,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Axe"},"mapData":{},"objectData":{},"islandMaskData":{},"itemData":{}}
 
     generateItemData(state["itemData"])
 
@@ -1153,20 +1166,23 @@ def generateState():
 if __name__ == "__main__":
     state = generateState()
 
-    running = True
-
-    while running:
+    while state["running"]:
 
         previousState = copy.deepcopy(state)
 
         try:
-            clearConsole()
 
-            renderView(state)
+            isPlayerDead(state)
 
-            playerCommand = input("Command > ")
+            if state["running"]:
 
-            parseCommand(playerCommand)
+                clearConsole()
+
+                renderView(state)
+
+                playerCommand = input("Command > ")
+
+                parseCommand(playerCommand)
         except Exception as e:
             caughtErrorPage(state, previousState, e)
 
