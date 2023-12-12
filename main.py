@@ -524,16 +524,6 @@ def generateMap(state):
 
     playerSpawn = sampleWithRemove(spawnLists["beach"], 1)[0]
 
-    spawnX, spawnY = playerSpawn
-
-    generateEnemies(objectData, [(spawnX, spawnY - 1)], 1, "♀", goblinDropTable, 30, 10,"Goblin")
-
-    generateEnemies(objectData, [(spawnX, spawnY - 2)], 1, "♘", knightDropTable, 100, 20,"Knight")
-
-    generateEnemies(objectData, [(spawnX, spawnY - 3)], 1, "♗", ogreDropTable, 150, 20,"Ogre")
-
-    generateEnemies(objectData, [(spawnX, spawnY - 4)], 1, "♔", kingDropTable, 200, 50,"The King")
-
     state["playerData"]["position"] = playerSpawn
 
     state["mapData"] = map
