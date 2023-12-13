@@ -782,7 +782,7 @@ def fightEnemy(state : dict, location):
         enemyHealth, enemyMaxHealth = enemyData["health"], enemyData["maximumHealth"]
         playerHealth, playerMaxHealth = state["playerData"]["health"], state["playerData"]["maximumHealth"]
         playerDamage = state["playerData"]["attackBonus"] + getItemDamage(state, state["playerData"]["selectedItem"])
-        playerBlockChance = sum([getItemBlockChance(state, item) for item in list(state["playerData"]["inventory"].keys()) if playerHasItem(state, item)])
+        playerBlockChance = sum([getItemBlockChance(state, item) * amount for item, amount in state["playerData"]["inventory"].items() if playerHasItem(state, item)])
         writeTextToScreen(fightScreen,"Your Health:")
         enemyNameFormatted = f"{enemyName}'s Health:"
         writeTextToScreen(fightScreen,enemyNameFormatted,(SCREEN_WIDTH-len(enemyNameFormatted), 0))
@@ -914,10 +914,6 @@ def updatePlayerOrbs(state):
     newMaximumHealth = baseHealth + getAmountOfItem(state, "Health Up Orb") * 10
     state["playerData"]["maximumHealth"] = newMaximumHealth
     state["playerData"]["attackBonus"] = getAmountOfItem(state, "Attack Up Orb") * 10
-
-    if getAmountOfItem(state, "Med Kit") > 0:
-        state["playerData"]["health"] = state["playerData"]["maximumHealth"]
-        deletePlayerItem(state,"Med Kit")
 
 def convertArgs(argList : list):
     convertedList = []
@@ -1051,6 +1047,11 @@ def interactLookup(state : dict):
     playerDirection = state["playerData"]["direction"]
     interactLocation = (playerX + playerDirection[0], playerY + playerDirection[1])
     #If there is nothing at that spot skip.
+
+    if interactLocation not in state["objectData"] and getAmountOfItem(state,"Med Kit") > 0 and getPlayerSelected(state) == "Med Kit":
+        state["playerData"]["health"] = state["playerData"]["maximumHealth"]
+        removePlayerItem(state, "Med Kit", 1)
+
     if not interactLocation in state["objectData"]:
         return
     
@@ -1100,6 +1101,8 @@ COMMANDS = {
     "move" : movePlayer,
     "equip" : equipItem,
     "select" : equipItem,
+    "i" : interactLookup,
+    "med" : interactLookup,
     "interact" : interactLookup,
     "cut" : interactLookup,
     "mine" : interactLookup,

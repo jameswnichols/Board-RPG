@@ -26,7 +26,7 @@ A 2D randomly-generated game made for my Year 1 Semester 1 programming project.
 - `equip / select` > `slot[1 -> ...]`
 - `save` > `[filename]`
 - `load` > `[filename]`
-- `interact / cut / mine / trade / attack`
+- `i / interact / cut / mine / trade / attack / med`
 - `rendermap` > *Renders the map to a file called "map.txt".*
 - `giveall` > *CHEAT - Gives yourself 1000 of every item in the game*.
 
