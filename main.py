@@ -693,6 +693,8 @@ def showHelp(state : dict):
     renderScreenToConsole(helpScreen)
 
 def validateTradeInput(inp : str):
+    if inp.lower() in ["a", "all"]:
+        return "all"
     if inp.lower() in ["c","confirm"]:
         return "confirm"
     elif inp.lower() in ["d", "deny"]:
@@ -726,7 +728,12 @@ def showTradeMenu(state : dict, trade : dict):
         writeTextToScreen(tradeScreen, outputDesc, (SCREEN_WIDTH-len(outputDesc)-1,(heightSplit * 3) + 2))
 
         playerHasEnough = getAmountOfItem(state, inputItemName) >= inputItemCount
-        tradeText = "(C) to Confirm / (D) to Deny" if playerHasEnough else "(D) to Deny"
+
+        allCount = inputHas // inputItemCount
+
+        playerHasALl = getAmountOfItem(state, inputItemName) >= allCount
+
+        tradeText = f"(A) to Trade All ({allCount}) / (C) to Confirm / (D) to Deny" if playerHasEnough else "(D) to Deny"
         writeTextToScreen(tradeScreen,tradeText,(0, SCREEN_HEIGHT-1))
         
         clearConsole()
@@ -738,6 +745,9 @@ def showTradeMenu(state : dict, trade : dict):
         if validated == "confirm" and playerHasEnough:
             removePlayerItem(state, inputItemName, inputItemCount)
             givePlayerItem(state, outputItemName, outputItemCount)
+        if validated == "all" and playerHasALl:
+            removePlayerItem(state, inputItemName, allCount * inputItemCount)
+            givePlayerItem(state, outputItemName, allCount)
 
 def caughtErrorPage(state : dict, previousState : dict, ex : Exception):
     errorPage = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT))
