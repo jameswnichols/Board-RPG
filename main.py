@@ -1074,9 +1074,10 @@ def interactLookup(state : dict):
     interactLocation = (playerX + playerDirection[0], playerY + playerDirection[1])
     #If there is nothing at that spot skip.
 
-    if interactLocation not in state["objectData"] and getAmountOfItem(state,"Med Kit") > 0 and getPlayerSelected(state) == "Med Kit":
+    if getAmountOfItem(state,"Med Kit") > 0 and getPlayerSelected(state) == "Med Kit" and state["playerData"]["health"] < state["playerData"]["maximumHealth"]:
         state["playerData"]["health"] = state["playerData"]["maximumHealth"]
         removePlayerItem(state, "Med Kit", 1)
+        return
 
     if not interactLocation in state["objectData"]:
         return
