@@ -988,6 +988,8 @@ def movePlayer(state : dict, moveDirection : str = "f", steps : int = 1):
     playerDirectionIndex = directions.index(playerDirection)
     validMove = True
     moveShift = 0
+    if not isinstance(moveDirection, str):
+        return
     arg = moveDirection.lower()
     if arg in ["f","for","forwards"]:
         moveShift = 0
