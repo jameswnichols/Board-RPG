@@ -4,3 +4,6 @@ main.sav
 .DS_Store
 autosave.sav
 testing.sav
+build/
+dist/
+main.spec
