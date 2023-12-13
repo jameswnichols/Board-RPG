@@ -928,7 +928,7 @@ def convertArgs(argList : list):
 
     return convertedList
 
-def parseCommand(command : str):
+def parseCommand(state : dict, command : str):
     splitCommand = command.strip().split()
     if not splitCommand:
         return
@@ -1141,7 +1141,7 @@ def generateState():
 
     return state
 
-if __name__ == "__main__":
+def main():
     state = generateState()
 
     while state["running"]:
@@ -1152,12 +1152,11 @@ if __name__ == "__main__":
                 clearConsole()
                 renderView(state)
                 playerCommand = input("Command > ")
-                parseCommand(playerCommand)
+                parseCommand(state, playerCommand)
         except Exception as e:
             caughtErrorPage(state, previousState, e)
 
-        #ABSOLUTELY HORRIBLE PRACTICE
-        SCREEN_WIDTH, SCREEN_HEIGHT = os.get_terminal_size()
-        SCREEN_HEIGHT -= 1
+if __name__ == "__main__":
+    main()
 
     
