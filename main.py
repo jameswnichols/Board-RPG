@@ -369,13 +369,14 @@ def randomChance(chance, rolls):
 def getDroppedItems(dropTable, rolls):
     rollCount, chanceData = rolls, dropTable["chanceData"]
     itemsDropped = {}
-    for i, itemDrop in enumerate(chanceData):
-        (item, count), chance = itemDrop
-        if randomChance(chance, rollCount):
-            if item in itemsDropped:
-                itemsDropped[item] += count
-            else:
-                itemsDropped[item] = count
+    for roll in range(rolls):
+        for i, itemDrop in enumerate(chanceData):
+            (item, count), chance = itemDrop
+            if randomChance(chance, 1):
+                if item in itemsDropped:
+                    itemsDropped[item] += count
+                else:
+                    itemsDropped[item] = count
     
     return itemsDropped
     #Formatted as {chanceData: [[(ITEM, COUNT), CHANCE]]}
