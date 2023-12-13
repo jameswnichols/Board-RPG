@@ -110,7 +110,6 @@ def pickVillagePoints(pointList : list, amount : int):
         for point in points:
             if checkIfCirclesOverlap(point, VILLAGE_EXCLUSION_RADIUS, randomPoint, VILLAGE_EXCLUSION_RADIUS):
                 hasOverlapped = True
-                #break
 
         if not hasOverlapped:
             points.append(randomPoint)
@@ -211,7 +210,6 @@ def getRandomPointsInCircle(centre, radius, amount):
         for point in points:
             if abs(point[0] - pos[0]) == 1 or abs(point[1] - pos[1]) == 1:
                 notNearby = False
-                #break
 
         if pos not in points and notNearby:
             points.append(pos)
@@ -622,7 +620,7 @@ def getItemDescription(state : dict, itemName : str):
         if desc != "":
             return desc
     except:
-        pass
+        return itemDescription
     return itemDescription
 
 def findItemPage(state : dict, itemName):
