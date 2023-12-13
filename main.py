@@ -71,8 +71,6 @@ TERRAIN_REQUIRED_ITEM = {
     "mountains":"Ice Picks"
 }
 
-itemData = {}
-
 TREE_AMOUNT = 1500
 
 HILL_TREE_AMOUNT = 500
