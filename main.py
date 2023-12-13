@@ -87,6 +87,8 @@ OGRE_AMOUNT = 50
 
 MAX_HEALTH_RENDER = 800
 
+AUTOSAVE_SECONDS = 300
+
 def checkIfCirclesOverlap(centre1, radius1, centre2, radius2):
     distance = getLength(centre1, centre2)
     if distance <= radius1 - radius2 or distance <= radius2 - radius1:
@@ -1082,6 +1084,11 @@ def loadGame(state : dict, filename : str):
         overwriteState(state, pickle.load(f))
     state["renderView"] = "showBoard"
 
+def handleAutosave(state : dict):
+    if time.time() - state["autosaveTimestamp"] > AUTOSAVE_SECONDS:
+        state["autosaveTimestamp"] = time.time()
+        saveGame(state, "autosave")
+
 def giveAllItems(state : dict):
     for item, data in state["itemData"].items():
         givePlayerItem(state, item, 1000)
@@ -1132,7 +1139,7 @@ def generateItemData(itemData : dict):
     generateItem(itemData, "Med Kit", 0, 0, 1,"Heals you back to full health immediately.")
 
 def generateState():
-    state = {"running":True,"renderView":None,"page":1,"playerData":{"health":100,"maximumHealth":100,"baseMaximumHealth":100,"attackBonus":0,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Axe"},"mapData":{},"objectData":{},"islandMaskData":{},"itemData":{}}
+    state = {"autosaveTimestamp":time.time(),"running":True,"renderView":None,"page":1,"playerData":{"health":100,"maximumHealth":100,"baseMaximumHealth":100,"attackBonus":0,"position":(0, 0),"direction":(0, 1),"inventory":{"Pickaxe" : 1, "Axe" : 1}, "selectedItem":"Axe"},"mapData":{},"objectData":{},"islandMaskData":{},"itemData":{}}
 
     generateItemData(state["itemData"])
 
@@ -1146,6 +1153,7 @@ def main():
     while state["running"]:
         previousState = copy.deepcopy(state)
         try:
+            handleAutosave(state)
             isPlayerDead(state)
             if state["running"]:
                 clearConsole()
