@@ -704,28 +704,31 @@ def showTradeMenu(state : dict, trade : dict):
     state["renderView"] = "showBoard"
     inputItemName, inputItemCount = trade["input"]
     outputItemName, outputItemCount = trade["output"]
-    inputHas, outputHas = getAmountOfItem(state, inputItemName), getAmountOfItem(state, outputItemName)
 
-    tradeScreen = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT))
-    writeTextToScreen(tradeScreen,f"Trade:")
-
-    heightSplit = SCREEN_HEIGHT//4
-    writeTextToScreen(tradeScreen,"You Give:",(0, heightSplit * 1))
-    writeTextToScreen(tradeScreen,f"{inputItemName} x {inputItemCount} (Have {inputHas})",(0, (heightSplit * 1) + 1))
-    writeTextToScreen(tradeScreen,f"↳ {getItemDescription(state, inputItemName)}",(1, (heightSplit * 1) + 2))
-
-    receiveText = ":You Receive"
-    writeTextToScreen(tradeScreen,receiveText,(SCREEN_WIDTH-len(receiveText),heightSplit * 3))
-    itemInfo = f"{outputItemCount} x {outputItemName} (Have {outputHas})"
-    writeTextToScreen(tradeScreen,itemInfo,(SCREEN_WIDTH-len(itemInfo),(heightSplit * 3) + 1))
-    outputDesc = f"{getItemDescription(state, outputItemName)} ↲"
-    writeTextToScreen(tradeScreen, outputDesc, (SCREEN_WIDTH-len(outputDesc)-1,(heightSplit * 3) + 2))
-
-    playerHasEnough = getAmountOfItem(state, inputItemName) >= inputItemCount
-    tradeText = "(C) to Confirm / (D) to Deny" if playerHasEnough else "(D) to Deny"
-    writeTextToScreen(tradeScreen,tradeText,(0, SCREEN_HEIGHT-1))
     madeTrade = False
     while not madeTrade:
+
+        inputHas, outputHas = getAmountOfItem(state, inputItemName), getAmountOfItem(state, outputItemName)
+
+        tradeScreen = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT))
+        writeTextToScreen(tradeScreen,f"Trade:")
+
+        heightSplit = SCREEN_HEIGHT//4
+        writeTextToScreen(tradeScreen,"You Give:",(0, heightSplit * 1))
+        writeTextToScreen(tradeScreen,f"{inputItemName} x {inputItemCount} (Have {inputHas})",(0, (heightSplit * 1) + 1))
+        writeTextToScreen(tradeScreen,f"↳ {getItemDescription(state, inputItemName)}",(1, (heightSplit * 1) + 2))
+
+        receiveText = ":You Receive"
+        writeTextToScreen(tradeScreen,receiveText,(SCREEN_WIDTH-len(receiveText),heightSplit * 3))
+        itemInfo = f"{outputItemCount} x {outputItemName} (Have {outputHas})"
+        writeTextToScreen(tradeScreen,itemInfo,(SCREEN_WIDTH-len(itemInfo),(heightSplit * 3) + 1))
+        outputDesc = f"{getItemDescription(state, outputItemName)} ↲"
+        writeTextToScreen(tradeScreen, outputDesc, (SCREEN_WIDTH-len(outputDesc)-1,(heightSplit * 3) + 2))
+
+        playerHasEnough = getAmountOfItem(state, inputItemName) >= inputItemCount
+        tradeText = "(C) to Confirm / (D) to Deny" if playerHasEnough else "(D) to Deny"
+        writeTextToScreen(tradeScreen,tradeText,(0, SCREEN_HEIGHT-1))
+        
         clearConsole()
         renderScreenToConsole(tradeScreen)
         userInput = input("> ")
@@ -735,7 +738,6 @@ def showTradeMenu(state : dict, trade : dict):
         if validated == "confirm" and playerHasEnough:
             removePlayerItem(state, inputItemName, inputItemCount)
             givePlayerItem(state, outputItemName, outputItemCount)
-            return
 
 def caughtErrorPage(state : dict, previousState : dict, ex : Exception):
     errorPage = generateScreen((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -891,6 +893,14 @@ def getItemDamage(state : dict, itemName : str):
 def getItemBlockChance(state : dict, itemName : str):
     return 0 if itemName not in state["itemData"] else state["itemData"][itemName]["nullifyChance"]
 
+def getPlayerInventory(state : dict):
+    return state["playerData"]["inventory"]
+
+def indexOfItem(state : dict, itemName : str):
+    if itemName not in getPlayerInventory(state):
+        return 0
+    return list(getPlayerInventory(state).keys()).index(itemName)
+
 def givePlayerItem(state : dict, itemName : str, itemCount : int):
     if not playerHasItem(state, itemName):
         state["playerData"]["inventory"][itemName] = itemCount
@@ -903,10 +913,16 @@ def removePlayerItem(state : dict, itemName : str, itemCount : int):
     if itemAmount > 0:
         amountLeftOver = 0 if itemAmount - itemCount < 0 else itemAmount - itemCount
         state["playerData"]["inventory"][itemName] = amountLeftOver
+        if amountLeftOver == 0:
+            if getPlayerSelected(state) == itemName:
+                itemIndex = indexOfItem(state, getPlayerSelected(state))
+                itemIndex = itemIndex - 1 if itemIndex > 0 else itemIndex
+                state["playerData"]["selectedItem"] = list(state["playerData"]["inventory"].keys())[itemIndex]
+            deletePlayerItem(state, itemName)
     updatePlayerOrbs(state)
 
 def deletePlayerItem(state : dict, itemName : str):
-    if playerHasItem(state, itemName):
+    if itemName in state["playerData"]["inventory"]:
         del state["playerData"]["inventory"][itemName]
 
 def updatePlayerOrbs(state):
