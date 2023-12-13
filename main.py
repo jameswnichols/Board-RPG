@@ -807,7 +807,7 @@ def fightEnemy(state : dict, location):
         if userInput == "attack":
             newEnemyHealth = 0 if enemyHealth - playerDamage < 0 else enemyHealth - playerDamage
             state["objectData"][location]["health"] = newEnemyHealth
-            fightList.append((f"Hit {enemyName} for {playerDamage} x ♥","left"))
+            fightList.append((f"Hit {enemyName} for {playerDamage//10} x ♥","left"))
             if newEnemyHealth == 0:
                 dropRolls = getItemRolls(state, getPlayerSelected(state))
                 enemyDrops = getDroppedItems(enemyData["drops"],dropRolls)
@@ -822,7 +822,7 @@ def fightEnemy(state : dict, location):
                     newPlayerHealth = 0 if playerHealth - enemyDamage < 0 else playerHealth - enemyDamage
                     state["playerData"]["health"] = newPlayerHealth
 
-                    fightList.append((f"{enemyName} hit you for {enemyDamage} x ♥","right"))
+                    fightList.append((f"{enemyName} hit you for {enemyDamage//10} x ♥","right"))
                     
                     if newPlayerHealth == 0:
                         fighting = False
@@ -910,7 +910,7 @@ def updatePlayerOrbs(state):
     baseHealth = state["playerData"]["baseMaximumHealth"]
     newMaximumHealth = baseHealth + getAmountOfItem(state, "Health Up Orb") * 10
     state["playerData"]["maximumHealth"] = newMaximumHealth
-    state["playerData"]["attackBonus"] = getAmountOfItem(state, "Attack Up Orb")
+    state["playerData"]["attackBonus"] = getAmountOfItem(state, "Attack Up Orb") * 10
 
     if getAmountOfItem(state, "Med Kit") > 0:
         state["playerData"]["health"] = state["playerData"]["maximumHealth"]
