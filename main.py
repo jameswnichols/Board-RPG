@@ -729,7 +729,7 @@ def showTradeMenu(state : dict, trade : dict):
 
         allCount = inputHas // inputItemCount
 
-        playerHasALl = getAmountOfItem(state, inputItemName) >= allCount
+        playerHasAll = getAmountOfItem(state, inputItemName) >= allCount
 
         tradeText = f"(A) to Trade All ({allCount}) / (C) to Confirm / (D) to Deny" if playerHasEnough else "(D) to Deny"
         writeTextToScreen(tradeScreen,tradeText,(0, SCREEN_HEIGHT-1))
@@ -743,7 +743,7 @@ def showTradeMenu(state : dict, trade : dict):
         if validated == "confirm" and playerHasEnough:
             removePlayerItem(state, inputItemName, inputItemCount)
             givePlayerItem(state, outputItemName, outputItemCount)
-        if validated == "all" and playerHasALl:
+        if validated == "all" and playerHasAll:
             removePlayerItem(state, inputItemName, allCount * inputItemCount)
             givePlayerItem(state, outputItemName, allCount)
 
