@@ -1,6 +1,6 @@
 #https://github.com/jameswnichols/Board-RPG
 #19293404programmingCoursework4004
-#When run on repl.it, must be started twice to stop visual glitch.
+#When run on repl.it, must be started twice to stop a visual glitch.
 
 import random
 import math
